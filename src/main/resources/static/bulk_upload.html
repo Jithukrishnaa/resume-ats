@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>AI ATS Resume Checker</title>
+
+<style>
+
+body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:#eef3f8;
+    margin:0;
+}
+
+.container{
+    width:900px;
+    margin:40px auto;
+    background:white;
+    border-radius:12px;
+    padding:40px;
+    box-shadow:0px 10px 30px rgba(0,0,0,.15);
+}
+
+h1{
+    text-align:center;
+    color:#1f4f82;
+}
+
+.section{
+    margin-top:35px;
+    padding:25px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+button{
+
+    margin-top:20px;
+    width:100%;
+    padding:14px;
+
+    background:#1976d2;
+    color:white;
+
+    border:none;
+    border-radius:6px;
+
+    cursor:pointer;
+
+    font-size:17px;
+}
+
+button:hover{
+    background:#125aa5;
+}
+
+.download{
+    background:#0b8e3a;
+}
+
+.download:hover{
+    background:#066d2b;
+}
+
+.status{
+    margin-top:20px;
+    font-weight:bold;
+    color:#1b5e20;
+    word-wrap:break-word;
+}
+
+input[type=file]{
+    margin-top:15px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>AI ATS Resume Checker</h1>
+
+<!-- ========================================================= -->
+<!-- Resume Upload -->
+<!-- ========================================================= -->
+
+<div class="section">
+
+<h2>Bulk Resume Upload</h2>
+
+<p>Upload a ZIP file containing resumes.</p>
+
+<input
+type="file"
+id="resumeZip"
+accept=".zip">
+
+<br>
+
+<button onclick="uploadZip()">
+Upload Resume ZIP
+</button>
+
+<div id="resumeStatus" class="status"></div>
+
+</div>
+<!-- ========================================================= -->
+<!-- Single Resume Upload -->
+<!-- ========================================================= -->
+
+<div class="section">
+
+    <h2>Single Resume Upload</h2>
+
+    <p>Upload one candidate resume in PDF format.</p>
+
+    <input
+        type="file"
+        id="singleResume"
+        accept=".pdf">
+
+    <br>
+
+    <button onclick="uploadSingleResume()">
+        Upload Single Resume
+    </button>
+
+    <div id="singleResumeStatus" class="status"></div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- Job Description Upload -->
+<!-- ========================================================= -->
+
+<div class="section">
+
+<h2>Upload Job Description</h2>
+
+<p>Select a Job Description PDF.</p>
+
+<input
+type="file"
+id="jdFile"
+accept=".pdf">
+
+<br>
+
+<button onclick="uploadJD()">
+Upload Job Description
+</button>
+
+<div id="jdStatus" class="status"></div>
+
+</div>
+<!-- ========================================================= -->
+<!-- Search and Manage Resumes -->
+<!-- ========================================================= -->
+
+<div class="section">
+
+    <h2>Search Resumes</h2>
+
+    <p>Search by candidate name, email, or resume filename.</p>
+
+    <input
+        type="text"
+        id="resumeSearchQuery"
+        placeholder="Enter candidate name, email or filename"
+        style="
+            width:100%;
+            padding:12px;
+            box-sizing:border-box;
+            border:1px solid #ccc;
+            border-radius:6px;
+            font-size:16px;
+        ">
+
+    <button onclick="searchResumes()">
+        Search Resume
+    </button>
+
+    <div id="searchStatus" class="status"></div>
+
+    <div id="searchResults" style="margin-top:20px;">
+        No search performed.
+    </div>
+
+</div>
+
+<!-- ========================================================= -->
+<!-- ATS STATUS -->
+<!-- ========================================================= -->
+
+<div class="section">
+
+<h2>ATS Status</h2>
+
+<div id="atsStatus">
+
+Waiting for Job Description...
+
+</div>
+
+<br>
+
+<button onclick="loadResults()">
+
+View Results
+
+</button>
+
+</div>
+
+<!-- Results Table -->
+
+<div class="section">
+
+<h2>Candidate Results</h2>
+
+<div id="resultsTable">
+
+No results available.
+
+</div>
+
+</div>
+
+<div class="section">
+
+<h2>Download Report</h2>
+
+<button
+class="download"
+onclick="downloadExcel()">
+
+Download ATS Excel Report
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+async function uploadZip(){
+
+    const file = document.getElementById("resumeZip").files[0];
+
+    if(!file){
+
+        alert("Please choose a Resume ZIP file.");
+
+        return;
+    }
+
+    const formData = new FormData();
+
+    // MUST match @RequestParam("zipFile")
+    formData.append("zipFile", file);
+
+    try{
+
+        const response = await fetch("/api/bulk/upload",{
+
+            method:"POST",
+
+            body:formData
+
+        });
+
+        const text = await response.text();
+
+        document.getElementById("resumeStatus").innerHTML=text;
+
+    }
+
+    catch(error){
+
+        document.getElementById("resumeStatus").innerHTML=
+        "Resume upload failed.";
+
+    }
+
+}
+
+async function uploadJD(){
+
+    const file=document.getElementById("jdFile").files[0];
+
+    if(!file){
+
+        alert("Please choose a Job Description.");
+
+        return;
+    }
+
+    const formData=new FormData();
+
+    // MUST match @RequestParam("file")
+    formData.append("file",file);
+
+    document.getElementById("atsStatus").innerHTML=
+    "Uploading Job Description...";
+
+    try{
+
+        const response=await fetch("/api/jobdescriptions/upload",{
+
+            method:"POST",
+
+            body:formData
+
+        });
+
+        const text=await response.text();
+
+        document.getElementById("jdStatus").innerHTML=text;
+
+        document.getElementById("atsStatus").innerHTML=
+        "ATS executed successfully. Rankings have been updated.";
+
+    }
+
+    catch(error){
+
+        document.getElementById("atsStatus").innerHTML=
+        "ATS execution failed.";
+
+    }
+
+}
+async function loadResults() {
+
+    const response = await fetch("/api/ats/results");
+
+    const data = await response.json();
+
+    let html = `
+
+    <table border="1"
+           cellpadding="8"
+           cellspacing="0"
+           style="width:100%;
+                  border-collapse:collapse;
+                  font-size:14px;">
+
+        <thead>
+
+        <tr style="background:#1976d2;color:white;">
+
+            <th>Rank</th>
+
+            <th>Candidate</th>
+
+            <th>Email</th>
+
+            <th>Experience</th>
+
+            <th>Location</th>
+
+            <th>Education</th>
+
+            <th>ATS Score</th>
+
+            <th>Recruiter Summary</th>
+
+            <th>Matched Skills</th>
+
+            <th>Missing Skills</th>
+
+            <th>Resume</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody>
+
+    `;
+
+    data.forEach(candidate => {
+
+    html += `
+        <tr>
+
+            <td>
+                ${candidate.rank}
+            </td>
+
+            <td>
+                ${candidate.candidateName || "-"}
+            </td>
+
+            <td>
+                ${candidate.email || "-"}
+            </td>
+
+            <td>
+                ${candidate.experience || "-"}
+            </td>
+
+            <td>
+                ${candidate.location || "-"}
+            </td>
+
+            <td>
+                ${candidate.education || "-"}
+            </td>
+
+            <td>
+                ${candidate.atsScore}%
+            </td>
+
+            <td>
+                ${candidate.recruiterSummary || "-"}
+            </td>
+
+            <td>
+                ${candidate.matchedSkills || "-"}
+            </td>
+
+            <td>
+                ${candidate.missingSkills || "-"}
+            </td>
+
+            <td>
+
+                <a
+                    href="/api/resume/${candidate.resumeId}"
+                    target="_blank"
+                    style="
+                        display:inline-block;
+                        background:#1976d2;
+                        color:white;
+                        padding:8px 12px;
+                        border-radius:5px;
+                        text-decoration:none;
+                        font-weight:bold;
+                    "
+                >
+                    View Resume
+                </a>
+
+            </td>
+
+        </tr>
+    `;
+
+});
+
+    html += `
+
+        </tbody>
+
+    </table>
+
+    `;
+
+    document.getElementById("resultsTable").innerHTML = html;
+
+}
+async function uploadSingleResume() {
+
+    const file =
+        document.getElementById("singleResume").files[0];
+
+    if (!file) {
+
+        alert("Please choose a PDF resume.");
+
+        return;
+    }
+
+    // Make sure it is PDF
+    if (!file.name.toLowerCase().endsWith(".pdf")) {
+
+        alert("Only PDF resumes are allowed.");
+
+        return;
+    }
+
+    const formData = new FormData();
+
+    // MUST match @RequestParam("file")
+    formData.append("file", file);
+
+    const status =
+        document.getElementById("singleResumeStatus");
+
+    status.innerHTML =
+        "Uploading and parsing resume...";
+
+    try {
+
+        const response =
+            await fetch("/api/resumes/upload", {
+
+                method: "POST",
+                body: formData
+
+            });
+
+        const text =
+            await response.text();
+
+        if (response.ok) {
+
+            status.innerHTML =
+                text.replace(/\n/g, "<br>");
+
+        } else {
+
+            status.innerHTML =
+                "Upload failed:<br>" + text;
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        status.innerHTML =
+            "Unable to connect to the server.";
+    }
+}
+// =========================================================
+// SEARCH RESUMES
+// =========================================================
+
+async function searchResumes() {
+
+    const query =
+        document.getElementById("resumeSearchQuery").value.trim();
+
+    const searchStatus =
+        document.getElementById("searchStatus");
+
+    const searchResults =
+        document.getElementById("searchResults");
+
+    if (!query) {
+
+        alert("Please enter a search value.");
+
+        return;
+    }
+
+    searchStatus.innerHTML =
+        "Searching...";
+
+    searchResults.innerHTML =
+        "";
+
+    try {
+
+        const response = await fetch(
+            "/api/resumes/search?query="
+            + encodeURIComponent(query)
+        );
+
+        if (!response.ok) {
+
+            searchStatus.innerHTML =
+                "Search failed.";
+
+            return;
+        }
+
+        const data = await response.json();
+
+        searchStatus.innerHTML =
+            "Search completed. Found "
+            + data.length
+            + " resume(s).";
+
+        if (data.length === 0) {
+
+            searchResults.innerHTML =
+                "<p>No resumes found.</p>";
+
+            return;
+        }
+
+        let html = `
+            <table
+                border="1"
+                cellpadding="10"
+                cellspacing="0"
+                style="
+                    width:100%;
+                    border-collapse:collapse;
+                ">
+
+                <tr>
+                    <th>ID</th>
+                    <th>Candidate</th>
+                    <th>Email</th>
+                    <th>Resume</th>
+                    <th>Action</th>
+                </tr>
+        `;
+
+        data.forEach(resume => {
+
+            html += `
+                <tr>
+
+                    <td>
+                        ${resume.id}
+                    </td>
+
+                    <td>
+                        ${resume.candidateName || "-"}
+                    </td>
+
+                    <td>
+                        ${resume.email || "-"}
+                    </td>
+
+                    <td>
+                        ${resume.fileName || "-"}
+                    </td>
+
+                    <td>
+
+                        <button
+                            onclick="deleteResume(${resume.id})"
+                            style="
+                                background:#d32f2f;
+                                color:white;
+                                border:none;
+                                padding:8px 14px;
+                                border-radius:5px;
+                                cursor:pointer;
+                            ">
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+            `;
+
+        });
+
+        html += `
+            </table>
+        `;
+
+        searchResults.innerHTML = html;
+
+    } catch (error) {
+
+        console.error(error);
+
+        searchStatus.innerHTML =
+            "Unable to connect to the server.";
+
+    }
+}
+
+
+// =========================================================
+// DELETE RESUME
+// =========================================================
+
+async function deleteResume(id) {
+
+    const confirmation =
+        confirm(
+            "Are you sure you want to delete this resume?\n\n"
+            + "This will remove the resume from the database."
+        );
+
+    if (!confirmation) {
+
+        return;
+    }
+
+    try {
+
+        const response = await fetch(
+            "/api/resumes/" + id,
+            {
+                method: "DELETE"
+            }
+        );
+
+        const text = await response.text();
+
+        if (response.ok) {
+
+            alert(text);
+
+            // Refresh current search
+            searchResumes();
+
+        } else {
+
+            alert(
+                "Delete failed:\n" + text
+            );
+        }
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Unable to connect to the server."
+        );
+    }
+}
+
+</script>
+
+</body>
+
+</html>

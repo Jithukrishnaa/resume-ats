@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload Job Description</title>
+</head>
+
+<body>
+
+    <h1>Upload Job Description</h1>
+
+    <form action="/api/jobdescriptions/upload"
+          method="post"
+          enctype="multipart/form-data">
+
+        <input type="file" name="file">
+
+        <br><br>
+
+        <button type="submit">
+            Upload Job Description
+        </button>
+
+    </form>
+
+</body>
+
+</html>

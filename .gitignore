@@ -1,0 +1,9 @@
+target/
+Uploads/
+.vscode/
+.idea/
+*.iml
+*.class
+*.log
+.env
+application-local.properties
