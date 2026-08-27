@@ -1,0 +1,2760 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Profile | AI ATS Resume Checker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background: #f5f7fb;
+
+            color: #17213a;
+        }
+
+        /* =====================================================
+           LAYOUT
+        ===================================================== */
+
+        .layout {
+            display: flex;
+            min-height: 100vh;
+        }
+
+
+        /* =====================================================
+           SIDEBAR
+        ===================================================== */
+
+        .sidebar {
+            width: 300px;
+
+            background: #ffffff;
+
+            border-right:
+                1px solid #e1e5ee;
+
+            padding: 28px 20px;
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+            bottom: 0;
+        }
+
+
+        .brand {
+            display: flex;
+
+            align-items: center;
+
+            gap: 14px;
+
+            padding:
+                0 15px 35px;
+        }
+
+
+        .brand-icon {
+            width: 52px;
+            height: 52px;
+
+            border-radius: 15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #4355e8,
+                    #7137d8
+                );
+
+            color: white;
+
+            display: flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            font-size: 27px;
+        }
+
+
+        .brand-title {
+            font-size: 24px;
+
+            font-weight: 800;
+
+            color: #244fd8;
+        }
+
+
+        .brand-subtitle {
+            font-size: 14px;
+
+            color: #66738e;
+
+            margin-top: 3px;
+        }
+
+
+        .nav {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        .nav a {
+            text-decoration: none;
+
+            color: #33415c;
+
+            padding:
+                15px 18px;
+
+            border-radius: 14px;
+
+            font-size: 16px;
+
+            display: flex;
+
+            align-items: center;
+
+            gap: 15px;
+
+            transition: 0.2s;
+        }
+
+
+        .nav a:hover {
+            background: #f0f3ff;
+
+            color: #384de0;
+        }
+
+
+        .nav a.active {
+            background: #edf1ff;
+
+            color: #384de0;
+
+            font-weight: 600;
+        }
+
+
+        .nav-icon {
+            width: 25px;
+
+            text-align: center;
+
+            font-size: 18px;
+        }
+
+
+        /* =====================================================
+           MAIN
+        ===================================================== */
+
+        .main {
+            margin-left: 300px;
+
+            width:
+                calc(100% - 300px);
+
+            padding:
+                45px 42px 70px;
+        }
+
+
+        .page-header {
+            margin-bottom: 30px;
+        }
+
+
+        .page-header h1 {
+            font-size: 36px;
+
+            color: #17213a;
+
+            margin-bottom: 8px;
+        }
+
+
+        .page-header p {
+            color: #63718c;
+
+            font-size: 16px;
+        }
+
+
+        /* =====================================================
+           CARDS
+        ===================================================== */
+
+        .card {
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 28px;
+
+            margin-bottom: 25px;
+
+            border:
+                1px solid #e3e7ef;
+
+            box-shadow:
+                0 4px 18px
+                rgba(26, 42, 78, 0.04);
+        }
+
+
+        .card-title {
+            display: flex;
+
+            align-items: center;
+
+            gap: 10px;
+
+            font-size: 22px;
+
+            margin-bottom: 23px;
+
+            color: #17213a;
+        }
+
+
+        .card-title-icon {
+            font-size: 23px;
+        }
+
+
+        /* =====================================================
+           GRID
+        ===================================================== */
+
+        .grid {
+            display: grid;
+
+            grid-template-columns:
+                repeat(2, minmax(0, 1fr));
+
+            gap: 20px;
+        }
+
+
+        .grid-3 {
+            display: grid;
+
+            grid-template-columns:
+                repeat(3, minmax(0, 1fr));
+
+            gap: 20px;
+        }
+
+
+        .full {
+            grid-column:
+                1 / -1;
+        }
+
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .field {
+            display: flex;
+
+            flex-direction: column;
+
+            gap: 8px;
+        }
+
+
+        label {
+            font-size: 14px;
+
+            font-weight: 700;
+
+            color: #26334d;
+        }
+
+
+        input,
+        textarea {
+            width: 100%;
+
+            border:
+                1px solid #d7dce7;
+
+            border-radius: 10px;
+
+            padding:
+                13px 14px;
+
+            font-size: 15px;
+
+            outline: none;
+
+            color: #17213a;
+
+            background: #ffffff;
+
+            transition: 0.2s;
+        }
+
+
+        input:focus,
+        textarea:focus {
+            border-color: #5266ed;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(82, 102, 237, 0.1);
+        }
+
+
+        textarea {
+            min-height: 120px;
+
+            resize: vertical;
+
+            line-height: 1.6;
+        }
+
+
+        /* =====================================================
+           DYNAMIC ITEMS
+        ===================================================== */
+
+        .dynamic-item {
+            border:
+                1px solid #e1e5ed;
+
+            border-radius: 15px;
+
+            padding: 22px;
+
+            margin-bottom: 18px;
+
+            background: #fbfcff;
+
+            position: relative;
+        }
+
+
+        .dynamic-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            margin-bottom: 18px;
+        }
+
+
+        .dynamic-header h3 {
+            font-size: 16px;
+
+            color: #26334d;
+        }
+
+
+        .remove-btn {
+            border: none;
+
+            background: #fff0f0;
+
+            color: #d32f2f;
+
+            padding:
+                9px 13px;
+
+            border-radius: 8px;
+
+            cursor: pointer;
+
+            font-weight: 600;
+        }
+
+
+        .remove-btn:hover {
+            background: #ffe0e0;
+        }
+
+
+        /* =====================================================
+           BUTTONS
+        ===================================================== */
+
+        .button-row {
+            display: flex;
+
+            gap: 15px;
+
+            flex-wrap: wrap;
+
+            margin-top: 20px;
+        }
+
+
+        button {
+            border: none;
+
+            cursor: pointer;
+
+            font-family: inherit;
+        }
+
+
+        .add-btn {
+            background: white;
+
+            color: #244fd8;
+
+            border:
+                1px dashed #244fd8;
+
+            padding:
+                11px 17px;
+
+            border-radius: 9px;
+
+            font-weight: 700;
+        }
+
+
+        .add-btn:hover {
+            background: #f1f4ff;
+        }
+
+
+        .save-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #244fd8,
+                    #3656df
+                );
+
+            color: white;
+
+            padding:
+                15px 27px;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+        }
+
+
+        .save-btn:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 7px 18px
+                rgba(36, 79, 216, 0.22);
+        }
+
+
+        .generate-btn {
+            background:
+                linear-gradient(
+                    135deg,
+                    #7137d8,
+                    #4c2bd8
+                );
+
+            color: white;
+
+            padding:
+                15px 27px;
+
+            border-radius: 10px;
+
+            font-size: 15px;
+
+            font-weight: 700;
+
+            min-width: 220px;
+        }
+
+
+        .generate-btn:hover {
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 7px 18px
+                rgba(92, 53, 216, 0.25);
+        }
+
+
+        .generate-btn:disabled,
+        .save-btn:disabled {
+            opacity: 0.6;
+
+            cursor: not-allowed;
+
+            transform: none;
+
+            box-shadow: none;
+        }
+
+
+        /* =====================================================
+           STATUS
+        ===================================================== */
+
+        .status {
+            display: none;
+
+            padding:
+                14px 18px;
+
+            border-radius: 10px;
+
+            margin-bottom: 20px;
+
+            font-weight: 600;
+        }
+
+
+        .status.success {
+            display: block;
+
+            background: #eaf8ef;
+
+            color: #168143;
+
+            border:
+                1px solid #bde7cb;
+        }
+
+
+        .status.error {
+            display: block;
+
+            background: #fff0f0;
+
+            color: #c62828;
+
+            border:
+                1px solid #f0c2c2;
+        }
+
+
+        .status.info {
+            display: block;
+
+            background: #edf3ff;
+
+            color: #2852b9;
+
+            border:
+                1px solid #cbd9ff;
+        }
+
+
+        /* =====================================================
+           BOTTOM ACTION
+        ===================================================== */
+
+        .action-card {
+            background: white;
+
+            border-radius: 18px;
+
+            padding: 25px 28px;
+
+            border:
+                1px solid #e3e7ef;
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            position: sticky;
+
+            bottom: 20px;
+
+            box-shadow:
+                0 8px 30px
+                rgba(26, 42, 78, 0.10);
+        }
+
+
+        .action-text h3 {
+            font-size: 18px;
+
+            margin-bottom: 5px;
+        }
+
+
+        .action-text p {
+            color: #66738e;
+
+            font-size: 14px;
+        }
+
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        .loading {
+            text-align: center;
+
+            padding: 50px;
+
+            color: #63718c;
+        }
+
+
+        .spinner {
+            width: 32px;
+
+            height: 32px;
+
+            border:
+                4px solid #e3e7ef;
+
+            border-top-color:
+                #4355e8;
+
+            border-radius: 50%;
+
+            animation:
+                spin 0.8s linear infinite;
+
+            margin:
+                0 auto 15px;
+        }
+
+
+        @keyframes spin {
+
+            to {
+                transform:
+                    rotate(360deg);
+            }
+        }
+
+
+        /* =====================================================
+           RESPONSIVE
+        ===================================================== */
+
+        @media (max-width: 1000px) {
+
+            .sidebar {
+                width: 220px;
+            }
+
+            .main {
+                margin-left: 220px;
+
+                width:
+                    calc(100% - 220px);
+
+                padding:
+                    30px 25px;
+            }
+
+            .grid,
+            .grid-3 {
+                grid-template-columns:
+                    1fr;
+            }
+
+        }
+
+
+        @media (max-width: 700px) {
+
+            .layout {
+                display: block;
+            }
+
+            .sidebar {
+                position: relative;
+
+                width: 100%;
+
+                height: auto;
+
+                border-right: none;
+
+                border-bottom:
+                    1px solid #e1e5ee;
+            }
+
+            .nav {
+                display: grid;
+
+                grid-template-columns:
+                    repeat(2, 1fr);
+            }
+
+            .main {
+                margin-left: 0;
+
+                width: 100%;
+
+                padding:
+                    25px 15px 50px;
+            }
+
+            .action-card {
+                position: relative;
+
+                bottom: auto;
+
+                flex-direction: column;
+
+                align-items: stretch;
+            }
+
+            .generate-btn,
+            .save-btn {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="layout">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="brand">
+
+            <div class="brand-icon">
+                📄
+            </div>
+
+            <div>
+
+                <div class="brand-title">
+                    AI ATS
+                </div>
+
+                <div class="brand-subtitle">
+                    Resume Checker
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <nav class="nav">
+
+            <a href="index.html">
+
+                <span class="nav-icon">
+                    🏠
+                </span>
+
+                Dashboard
+
+            </a>
+
+
+            <a href="upload.html">
+
+                <span class="nav-icon">
+                    ☁️
+                </span>
+
+                Upload Resumes
+
+            </a>
+
+
+            <a href="job-description.html">
+
+                <span class="nav-icon">
+                    💼
+                </span>
+
+                Job Description
+
+            </a>
+
+
+            <a href="ats-results.html">
+
+                <span class="nav-icon">
+                    📊
+                </span>
+
+                ATS Results
+
+            </a>
+
+
+            <a href="candidates.html">
+
+                <span class="nav-icon">
+                    👥
+                </span>
+
+                Candidates
+
+            </a>
+
+
+            <a href="reports.html">
+
+                <span class="nav-icon">
+                    📑
+                </span>
+
+                Reports
+
+            </a>
+
+
+            <a
+                href="profile.html"
+                class="active">
+
+                <span class="nav-icon">
+                    👤
+                </span>
+
+                Profile
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <div class="page-header">
+
+            <h1>
+                My Profile
+            </h1>
+
+            <p>
+                Build your professional profile and generate
+                an ATS-friendly resume.
+            </p>
+
+        </div>
+
+
+        <div
+            id="status"
+            class="status">
+        </div>
+
+
+        <!-- =================================================
+             PERSONAL INFORMATION
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    👤
+                </span>
+
+                Personal Information
+
+            </h2>
+
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Full Name
+                    </label>
+
+                    <input
+                        type="text"
+                        id="fullName"
+                        placeholder="Your full name">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Professional Title
+                    </label>
+
+                    <input
+                        type="text"
+                        id="professionalTitle"
+                        placeholder="Software Engineer">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        placeholder="you@example.com">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Phone
+                    </label>
+
+                    <input
+                        type="text"
+                        id="phone"
+                        placeholder="+91 XXXXX XXXXX">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="Kochi, Kerala, India">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        LinkedIn
+                    </label>
+
+                    <input
+                        type="url"
+                        id="linkedin"
+                        placeholder="https://linkedin.com/in/yourname">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        GitHub
+                    </label>
+
+                    <input
+                        type="url"
+                        id="github"
+                        placeholder="https://github.com/username">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Portfolio
+                    </label>
+
+                    <input
+                        type="url"
+                        id="portfolio"
+                        placeholder="https://yourportfolio.com">
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SUMMARY
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    ✨
+                </span>
+
+                Professional Summary
+
+            </h2>
+
+
+            <div class="field">
+
+                <label>
+                    Summary
+                </label>
+
+                <textarea
+                    id="summary"
+                    placeholder="Write a concise professional summary highlighting your experience, strengths and career focus."></textarea>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             OBJECTIVE
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    🎯
+                </span>
+
+                Career Objective
+
+            </h2>
+
+
+            <div class="field">
+
+                <label>
+                    Objective
+                </label>
+
+                <textarea
+                    id="objective"
+                    placeholder="Describe the type of role you are targeting and the value you want to bring."></textarea>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             SKILLS
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    🛠️
+                </span>
+
+                Skills & Languages
+
+            </h2>
+
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Technical Skills
+                    </label>
+
+                    <textarea
+                        id="skills"
+                        placeholder="Java, Python, Spring Boot, PostgreSQL, React, AWS, Docker"></textarea>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Languages
+                    </label>
+
+                    <textarea
+                        id="languages"
+                        placeholder="English, Malayalam, Hindi"></textarea>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Achievements
+                    </label>
+
+                    <textarea
+                        id="achievements"
+                        placeholder="Awards, competitions, recognitions, leadership achievements, publications, etc."></textarea>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             EDUCATION
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    🎓
+                </span>
+
+                Education
+
+            </h2>
+
+
+            <div id="educationContainer">
+            </div>
+
+
+            <button
+                type="button"
+                class="add-btn"
+                onclick="addEducation()">
+
+                + Add Education
+
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             EXPERIENCE
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    💼
+                </span>
+
+                Professional Experience
+
+            </h2>
+
+
+            <div id="experienceContainer">
+            </div>
+
+
+            <button
+                type="button"
+                class="add-btn"
+                onclick="addExperience()">
+
+                + Add Experience
+
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             PROJECTS
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    🚀
+                </span>
+
+                Projects
+
+            </h2>
+
+
+            <div id="projectsContainer">
+            </div>
+
+
+            <button
+                type="button"
+                class="add-btn"
+                onclick="addProject()">
+
+                + Add Project
+
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             CERTIFICATIONS
+        ================================================== -->
+
+        <section class="card">
+
+            <h2 class="card-title">
+
+                <span class="card-title-icon">
+                    📜
+                </span>
+
+                Certifications
+
+            </h2>
+
+
+            <div id="certificationsContainer">
+            </div>
+
+
+            <button
+                type="button"
+                class="add-btn"
+                onclick="addCertification()">
+
+                + Add Certification
+
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             ACTIONS
+        ================================================== -->
+
+        <section class="action-card">
+
+            <div class="action-text">
+
+                <h3>
+                    Ready to create your resume?
+                </h3>
+
+                <p>
+                    Save your profile first, then generate
+                    your professional PDF resume.
+                </p>
+
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    type="button"
+                    class="save-btn"
+                    id="saveBtn"
+                    onclick="saveProfile()">
+
+                    💾 Save Profile
+
+                </button>
+
+
+                <button
+                    type="button"
+                    class="generate-btn"
+                    id="generateBtn"
+                    onclick="generateResume()">
+
+                    ✨ AI Generate Resume
+
+                </button>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /* =====================================================
+       GLOBAL DATA
+    ===================================================== */
+
+    let profileData = null;
+
+
+    /* =====================================================
+       STATUS
+    ===================================================== */
+
+    function showStatus(
+        message,
+        type = "success"
+    ) {
+
+        const status =
+            document.getElementById("status");
+
+        status.textContent =
+            message;
+
+        status.className =
+            "status " + type;
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    function hideStatus() {
+
+        const status =
+            document.getElementById("status");
+
+        status.className =
+            "status";
+    }
+
+
+    /* =====================================================
+       ESCAPE HTML
+    ===================================================== */
+
+    function escapeHtml(value) {
+
+        if (
+            value === null ||
+            value === undefined
+        ) {
+
+            return "";
+        }
+
+        return String(value)
+            .replace(
+                /&/g,
+                "&amp;"
+            )
+            .replace(
+                /</g,
+                "&lt;"
+            )
+            .replace(
+                />/g,
+                "&gt;"
+            )
+            .replace(
+                /"/g,
+                "&quot;"
+            )
+            .replace(
+                /'/g,
+                "&#039;"
+            );
+    }
+
+
+    /* =====================================================
+       ADD EDUCATION
+    ===================================================== */
+
+    function addEducation(data = {}) {
+
+        const container =
+            document.getElementById(
+                "educationContainer"
+            );
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+        item.className =
+            "dynamic-item education-item";
+
+
+        item.innerHTML = `
+
+            <div class="dynamic-header">
+
+                <h3>
+                    Education
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-btn"
+                    onclick="this.closest('.education-item').remove()">
+
+                    Remove
+
+                </button>
+
+            </div>
+
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Degree
+                    </label>
+
+                    <input
+                        class="education-degree"
+                        value="${escapeHtml(data.degree || '')}"
+                        placeholder="B.Tech Computer Science">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Institution
+                    </label>
+
+                    <input
+                        class="education-institution"
+                        value="${escapeHtml(data.institution || '')}"
+                        placeholder="University / College">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <input
+                        class="education-location"
+                        value="${escapeHtml(data.location || '')}"
+                        placeholder="Kochi, Kerala">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Grade / CGPA
+                    </label>
+
+                    <input
+                        class="education-grade"
+                        value="${escapeHtml(data.grade || '')}"
+                        placeholder="8.5 CGPA">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Start Year
+                    </label>
+
+                    <input
+                        class="education-start"
+                        value="${escapeHtml(data.startYear || '')}"
+                        placeholder="2021">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        End Year
+                    </label>
+
+                    <input
+                        class="education-end"
+                        value="${escapeHtml(data.endYear || '')}"
+                        placeholder="2025">
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(item);
+    }
+
+
+    /* =====================================================
+       ADD EXPERIENCE
+    ===================================================== */
+
+    function addExperience(data = {}) {
+
+        const container =
+            document.getElementById(
+                "experienceContainer"
+            );
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+        item.className =
+            "dynamic-item experience-item";
+
+
+        item.innerHTML = `
+
+            <div class="dynamic-header">
+
+                <h3>
+                    Professional Experience
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-btn"
+                    onclick="this.closest('.experience-item').remove()">
+
+                    Remove
+
+                </button>
+
+            </div>
+
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Job Title
+                    </label>
+
+                    <input
+                        class="experience-job-title"
+                        value="${escapeHtml(data.jobTitle || '')}"
+                        placeholder="Software Engineer">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Company
+                    </label>
+
+                    <input
+                        class="experience-company"
+                        value="${escapeHtml(data.company || '')}"
+                        placeholder="Company Name">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Location
+                    </label>
+
+                    <input
+                        class="experience-location"
+                        value="${escapeHtml(data.location || '')}"
+                        placeholder="Bangalore, India">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Start Date
+                    </label>
+
+                    <input
+                        class="experience-start"
+                        type="text"
+                        value="${escapeHtml(data.startDate || '')}"
+                        placeholder="June 2024">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        End Date
+                    </label>
+
+                    <input
+                        class="experience-end"
+                        type="text"
+                        value="${escapeHtml(data.endDate || '')}"
+                        placeholder="Present">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Currently Working
+                    </label>
+
+                    <input
+                        class="experience-current"
+                        type="checkbox"
+                        ${data.currentlyWorking ? "checked" : ""}>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Description
+                    </label>
+
+                    <textarea
+                        class="experience-description"
+                        placeholder="Describe responsibilities, achievements and measurable results.">${escapeHtml(data.description || '')}</textarea>
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(item);
+    }
+
+
+    /* =====================================================
+       ADD PROJECT
+    ===================================================== */
+
+    function addProject(data = {}) {
+
+        const container =
+            document.getElementById(
+                "projectsContainer"
+            );
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+        item.className =
+            "dynamic-item project-item";
+
+
+        item.innerHTML = `
+
+            <div class="dynamic-header">
+
+                <h3>
+                    Project
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-btn"
+                    onclick="this.closest('.project-item').remove()">
+
+                    Remove
+
+                </button>
+
+            </div>
+
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Project Name
+                    </label>
+
+                    <input
+                        class="project-name"
+                        value="${escapeHtml(data.projectName || '')}"
+                        placeholder="AI Resume ATS Checker">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Technologies
+                    </label>
+
+                    <input
+                        class="project-technologies"
+                        value="${escapeHtml(data.technologies || '')}"
+                        placeholder="Java, Spring Boot, PostgreSQL">
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Project Description
+                    </label>
+
+                    <textarea
+                        class="project-description"
+                        placeholder="Describe the project, your contribution and key results.">${escapeHtml(data.description || '')}</textarea>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Project URL
+                    </label>
+
+                    <input
+                        type="url"
+                        class="project-link"
+                        value="${escapeHtml(data.projectLink || '')}"
+                        placeholder="https://github.com/username/project">
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(item);
+    }
+
+
+    /* =====================================================
+       ADD CERTIFICATION
+    ===================================================== */
+
+    function addCertification(data = {}) {
+
+        const container =
+            document.getElementById(
+                "certificationsContainer"
+            );
+
+        const item =
+            document.createElement(
+                "div"
+            );
+
+        item.className =
+            "dynamic-item certification-item";
+
+
+        item.innerHTML = `
+
+            <div class="dynamic-header">
+
+                <h3>
+                    Certification
+                </h3>
+
+                <button
+                    type="button"
+                    class="remove-btn"
+                    onclick="this.closest('.certification-item').remove()">
+
+                    Remove
+
+                </button>
+
+            </div>
+
+
+            <div class="grid">
+
+                <div class="field">
+
+                    <label>
+                        Certification Name
+                    </label>
+
+                    <input
+                        class="certification-name"
+                        value="${escapeHtml(data.certificationName || '')}"
+                        placeholder="AWS Certified Cloud Practitioner">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Issuing Organization
+                    </label>
+
+                    <input
+                        class="certification-organization"
+                        value="${escapeHtml(data.issuingOrganization || '')}"
+                        placeholder="Amazon Web Services">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Issue Date
+                    </label>
+
+                    <input
+                        class="certification-date"
+                        type="text"
+                        value="${escapeHtml(data.issueDate || '')}"
+                        placeholder="January 2025">
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Credential URL
+                    </label>
+
+                    <input
+                        type="url"
+                        class="certification-url"
+                        value="${escapeHtml(data.credentialUrl || '')}"
+                        placeholder="https://example.com/certificate">
+
+                </div>
+
+            </div>
+        `;
+
+        container.appendChild(item);
+    }
+
+
+    /* =====================================================
+       COLLECT EDUCATION
+    ===================================================== */
+
+    function collectEducation() {
+
+        return [
+            ...document.querySelectorAll(
+                ".education-item"
+            )
+        ].map(item => {
+
+            return {
+
+                degree:
+                    item.querySelector(
+                        ".education-degree"
+                    )?.value || "",
+
+                institution:
+                    item.querySelector(
+                        ".education-institution"
+                    )?.value || "",
+
+                location:
+                    item.querySelector(
+                        ".education-location"
+                    )?.value || "",
+
+                grade:
+                    item.querySelector(
+                        ".education-grade"
+                    )?.value || "",
+
+                startYear:
+                    item.querySelector(
+                        ".education-start"
+                    )?.value || "",
+
+                endYear:
+                    item.querySelector(
+                        ".education-end"
+                    )?.value || ""
+            };
+        });
+    }
+
+
+    /* =====================================================
+       COLLECT EXPERIENCE
+    ===================================================== */
+
+    function collectExperience() {
+
+        return [
+            ...document.querySelectorAll(
+                ".experience-item"
+            )
+        ].map(item => {
+
+            return {
+
+                jobTitle:
+                    item.querySelector(
+                        ".experience-job-title"
+                    )?.value || "",
+
+                company:
+                    item.querySelector(
+                        ".experience-company"
+                    )?.value || "",
+
+                location:
+                    item.querySelector(
+                        ".experience-location"
+                    )?.value || "",
+
+                startDate:
+                    item.querySelector(
+                        ".experience-start"
+                    )?.value || "",
+
+                endDate:
+                    item.querySelector(
+                        ".experience-end"
+                    )?.value || "",
+
+                currentlyWorking:
+                    item.querySelector(
+                        ".experience-current"
+                    )?.checked || false,
+
+                description:
+                    item.querySelector(
+                        ".experience-description"
+                    )?.value || ""
+            };
+        });
+    }
+
+
+    /* =====================================================
+       COLLECT PROJECTS
+    ===================================================== */
+
+    function collectProjects() {
+
+        return [
+            ...document.querySelectorAll(
+                ".project-item"
+            )
+        ].map(item => {
+
+            return {
+
+                projectName:
+                    item.querySelector(
+                        ".project-name"
+                    )?.value || "",
+
+                technologies:
+                    item.querySelector(
+                        ".project-technologies"
+                    )?.value || "",
+
+                description:
+                    item.querySelector(
+                        ".project-description"
+                    )?.value || "",
+
+                projectLink:
+                    item.querySelector(
+                        ".project-link"
+                    )?.value || ""
+            };
+        });
+    }
+
+
+    /* =====================================================
+       COLLECT CERTIFICATIONS
+    ===================================================== */
+
+    function collectCertifications() {
+
+        return [
+            ...document.querySelectorAll(
+                ".certification-item"
+            )
+        ].map(item => {
+
+            return {
+
+                certificationName:
+                    item.querySelector(
+                        ".certification-name"
+                    )?.value || "",
+
+                issuingOrganization:
+                    item.querySelector(
+                        ".certification-organization"
+                    )?.value || "",
+
+                issueDate:
+                    item.querySelector(
+                        ".certification-date"
+                    )?.value || "",
+
+                credentialUrl:
+                    item.querySelector(
+                        ".certification-url"
+                    )?.value || ""
+            };
+        });
+    }
+
+
+    /* =====================================================
+       BUILD PROFILE REQUEST
+    ===================================================== */
+
+    function buildProfileRequest() {
+
+        return {
+
+            fullName:
+                document.getElementById(
+                    "fullName"
+                ).value.trim(),
+
+            professionalTitle:
+                document.getElementById(
+                    "professionalTitle"
+                ).value.trim(),
+
+            email:
+                document.getElementById(
+                    "email"
+                ).value.trim(),
+
+            phone:
+                document.getElementById(
+                    "phone"
+                ).value.trim(),
+
+            location:
+                document.getElementById(
+                    "location"
+                ).value.trim(),
+
+            linkedin:
+                document.getElementById(
+                    "linkedin"
+                ).value.trim(),
+
+            github:
+                document.getElementById(
+                    "github"
+                ).value.trim(),
+
+            portfolio:
+                document.getElementById(
+                    "portfolio"
+                ).value.trim(),
+
+            summary:
+                document.getElementById(
+                    "summary"
+                ).value.trim(),
+
+            objective:
+                document.getElementById(
+                    "objective"
+                ).value.trim(),
+
+            skills:
+                document.getElementById(
+                    "skills"
+                ).value.trim(),
+
+            languages:
+                document.getElementById(
+                    "languages"
+                ).value.trim(),
+
+            achievements:
+                document.getElementById(
+                    "achievements"
+                ).value.trim(),
+
+            education:
+                collectEducation(),
+
+            experience:
+                collectExperience(),
+
+            projects:
+                collectProjects(),
+
+            certifications:
+                collectCertifications()
+        };
+    }
+
+
+    /* =====================================================
+       SAVE PROFILE
+    ===================================================== */
+
+    async function saveProfile() {
+
+        hideStatus();
+
+        const saveButton =
+            document.getElementById(
+                "saveBtn"
+            );
+
+        saveButton.disabled =
+            true;
+
+        saveButton.textContent =
+            "Saving...";
+
+
+        try {
+
+            const request =
+                buildProfileRequest();
+
+
+            const response =
+                await fetch(
+                    "/api/profile/me",
+                    {
+                        method: "POST",
+
+                        credentials: "include",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                request
+                            )
+                    }
+                );
+
+
+            if (!response.ok) {
+
+                const error =
+                    await response.text();
+
+                throw new Error(
+                    error ||
+                    "Failed to save profile"
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            profileData =
+                data;
+
+
+            showStatus(
+                "Profile saved successfully.",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Save profile error:",
+                error
+            );
+
+
+            showStatus(
+                "Failed to save profile: "
+                    + error.message,
+                "error"
+            );
+
+
+        } finally {
+
+            saveButton.disabled =
+                false;
+
+            saveButton.textContent =
+                "💾 Save Profile";
+        }
+    }
+
+
+    /* =====================================================
+       LOAD PROFILE
+    ===================================================== */
+
+    async function loadProfile() {
+
+        try {
+
+            const response =
+                await fetch(
+                    "/api/profile/me",
+                    {
+                        method: "GET",
+
+                        credentials: "include"
+                    }
+                );
+
+
+            if (
+                response.status === 401
+            ) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+            }
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    "Failed to load profile"
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            profileData =
+                data;
+
+
+            populateProfile(
+                data
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Load profile error:",
+                error
+            );
+
+
+            showStatus(
+                "Unable to load profile: "
+                    + error.message,
+                "error"
+            );
+        }
+    }
+
+
+    /* =====================================================
+       POPULATE PROFILE
+    ===================================================== */
+
+    function populateProfile(data) {
+
+        const profile =
+            data.profile || {};
+
+
+        document.getElementById(
+            "fullName"
+        ).value =
+            profile.fullName || "";
+
+
+        document.getElementById(
+            "professionalTitle"
+        ).value =
+            profile.professionalTitle || "";
+
+
+        document.getElementById(
+            "email"
+        ).value =
+            profile.email || "";
+
+
+        document.getElementById(
+            "phone"
+        ).value =
+            profile.phone || "";
+
+
+        document.getElementById(
+            "location"
+        ).value =
+            profile.location || "";
+
+
+        document.getElementById(
+            "linkedin"
+        ).value =
+            profile.linkedin || "";
+
+
+        document.getElementById(
+            "github"
+        ).value =
+            profile.github || "";
+
+
+        document.getElementById(
+            "portfolio"
+        ).value =
+            profile.portfolio || "";
+
+
+        document.getElementById(
+            "summary"
+        ).value =
+            profile.summary || "";
+
+
+        document.getElementById(
+            "objective"
+        ).value =
+            profile.objective || "";
+
+
+        document.getElementById(
+            "skills"
+        ).value =
+            profile.skills || "";
+
+
+        document.getElementById(
+            "languages"
+        ).value =
+            profile.languages || "";
+
+
+        document.getElementById(
+            "achievements"
+        ).value =
+            profile.achievements || "";
+
+
+        populateCollection(
+            "educationContainer",
+            data.education || [],
+            addEducation
+        );
+
+
+        populateCollection(
+            "experienceContainer",
+            data.experience || [],
+            addExperience
+        );
+
+
+        populateCollection(
+            "projectsContainer",
+            data.projects || [],
+            addProject
+        );
+
+
+        populateCollection(
+            "certificationsContainer",
+            data.certifications || [],
+            addCertification
+        );
+    }
+
+
+    /* =====================================================
+       POPULATE COLLECTION
+    ===================================================== */
+
+    function populateCollection(
+        containerId,
+        items,
+        addFunction
+    ) {
+
+        const container =
+            document.getElementById(
+                containerId
+            );
+
+
+        container.innerHTML =
+            "";
+
+
+        if (
+            !items ||
+            items.length === 0
+        ) {
+
+            return;
+        }
+
+
+        items.forEach(
+            item => addFunction(item)
+        );
+    }
+
+
+    /* =====================================================
+       GENERATE / DOWNLOAD PDF
+    ===================================================== */
+
+    async function generateResume() {
+
+        hideStatus();
+
+
+        const generateButton =
+            document.getElementById(
+                "generateBtn"
+            );
+
+
+        generateButton.disabled =
+            true;
+
+
+        generateButton.textContent =
+            "✨ Generating Resume...";
+
+
+        try {
+
+            /*
+             * Save the latest changes first.
+             *
+             * This makes sure that if the user edits
+             * something and immediately clicks Generate,
+             * the PDF uses the latest profile information.
+             */
+
+            const request =
+                buildProfileRequest();
+
+
+            const saveResponse =
+                await fetch(
+                    "/api/profile/me",
+                    {
+                        method: "POST",
+
+                        credentials: "include",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json"
+                        },
+
+                        body:
+                            JSON.stringify(
+                                request
+                            )
+                    }
+                );
+
+
+            if (!saveResponse.ok) {
+
+                const error =
+                    await saveResponse.text();
+
+                throw new Error(
+                    error ||
+                    "Unable to save profile before generation"
+                );
+            }
+
+
+            /*
+             * Now request the generated PDF.
+             */
+
+            const response =
+                await fetch("/api/resume-generator/generate-pdf", 
+                    {
+                        method: "GET",
+
+                        credentials: "include"
+                    }
+                );
+
+
+            if (
+                response.status === 401
+            ) {
+
+                window.location.href =
+                    "login.html";
+
+                return;
+            }
+
+
+            if (!response.ok) {
+
+                const error =
+                    await response.text();
+
+                throw new Error(
+                    error ||
+                    "Failed to generate resume"
+                );
+            }
+
+
+            /*
+             * Convert response to PDF Blob.
+             */
+
+            const blob =
+                await response.blob();
+
+
+            if (
+                !blob ||
+                blob.size === 0
+            ) {
+
+                throw new Error(
+                    "Generated PDF is empty"
+                );
+            }
+
+
+            /*
+             * Get filename from backend.
+             */
+
+            const contentDisposition =
+                response.headers.get(
+                    "Content-Disposition"
+                );
+
+
+            let fileName =
+                "Resume.pdf";
+
+
+            if (contentDisposition) {
+
+                const match =
+                    contentDisposition.match(
+                        /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i
+                    );
+
+
+                if (
+                    match &&
+                    match[1]
+                ) {
+
+                    fileName =
+                        decodeURIComponent(
+                            match[1]
+                        );
+                }
+            }
+
+
+            /*
+             * Create browser download.
+             */
+
+            const url =
+                window.URL.createObjectURL(
+                    blob
+                );
+
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+
+            link.href =
+                url;
+
+
+            link.download =
+                fileName;
+
+
+            document.body.appendChild(
+                link
+            );
+
+
+            link.click();
+
+
+            link.remove();
+
+
+            setTimeout(
+                () => {
+
+                    window.URL.revokeObjectURL(
+                        url
+                    );
+
+                },
+                1000
+            );
+
+
+            showStatus(
+                "Resume generated and downloaded successfully.",
+                "success"
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "Resume generation error:",
+                error
+            );
+
+
+            showStatus(
+                "Resume generation failed: "
+                    + error.message,
+                "error"
+            );
+
+
+        } finally {
+
+            generateButton.disabled =
+                false;
+
+            generateButton.textContent =
+                "✨ AI Generate Resume";
+        }
+    }
+
+
+    /* =====================================================
+       INITIAL LOAD
+    ===================================================== */
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+
+            loadProfile();
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

@@ -20,7 +20,7 @@ public class ATSMatchingService {
     private final ATSResultRepository atsResultRepository;
     private final ATSScoringService atsScoringService;
 
-    private static final double ATS_CUTOFF = 85.0;
+    private static final double ATS_CUTOFF = 50.0;
 
     public ATSMatchingService(
             ResumeRepository resumeRepository,

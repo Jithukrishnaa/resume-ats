@@ -13,103 +13,188 @@ import java.util.List;
 @RequestMapping("/api/resumes")
 public class ResumeManagementController {
 
-    private final ResumeRepository resumeRepository;
+        private final ResumeRepository resumeRepository;
 
-    public ResumeManagementController(
-            ResumeRepository resumeRepository) {
+        // =========================================================
+        // CONSTRUCTOR
+        // =========================================================
 
-        this.resumeRepository = resumeRepository;
-    }
+        public ResumeManagementController(
+                        ResumeRepository resumeRepository) {
 
-    // =========================================================
-    // SEARCH RESUMES
-    // =========================================================
-
-    @GetMapping("/search")
-    public ResponseEntity<List<Resume>> searchResumes(
-            @RequestParam("query") String query) {
-
-        if (query == null || query.trim().isEmpty()) {
-
-            return ResponseEntity.badRequest().build();
+                this.resumeRepository = resumeRepository;
         }
 
-        String searchQuery = query.trim();
+        // =========================================================
+        // COUNT RESUMES
+        // =========================================================
 
-        List<Resume> results = resumeRepository
-                .findByCandidateNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFileNameContainingIgnoreCase(
-                        searchQuery,
-                        searchQuery,
-                        searchQuery);
+        @GetMapping("/count")
+        public ResponseEntity<Long> getResumeCount() {
 
-        return ResponseEntity.ok(results);
-    }
+                long count = resumeRepository.count();
 
-    // =========================================================
-    // DELETE RESUME
-    // =========================================================
+                System.out.println(
+                                "Total resumes in database : " + count);
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteResume(
-            @PathVariable Long id) {
-
-        Resume resume = resumeRepository.findById(id)
-                .orElse(null);
-
-        if (resume == null) {
-
-            return ResponseEntity.notFound().build();
+                return ResponseEntity.ok(count);
         }
 
-        // -----------------------------------------------------
-        // Delete physical resume file
-        // -----------------------------------------------------
+        // =========================================================
+        // SEARCH RESUMES
+        // =========================================================
 
-        String fileName = resume.getFileName();
+        @GetMapping("/search")
+        public ResponseEntity<List<Resume>> searchResumes(
+                        @RequestParam("query") String query) {
 
-        if (fileName != null && !fileName.isBlank()) {
+                // -----------------------------------------------------
+                // Validate search query
+                // -----------------------------------------------------
 
-            String resumeDirectory = System.getProperty("user.dir")
-                    + File.separator
-                    + "Uploads"
-                    + File.separator
-                    + "extracted";
+                if (query == null
+                                || query.trim().isEmpty()) {
 
-            File resumeFile = new File(
-                    resumeDirectory
-                            + File.separator
-                            + fileName);
-
-            if (resumeFile.exists()) {
-
-                boolean deleted = resumeFile.delete();
-
-                if (deleted) {
-
-                    System.out.println(
-                            "Resume file deleted : "
-                                    + resumeFile.getAbsolutePath());
-
-                } else {
-
-                    System.out.println(
-                            "Could not delete resume file : "
-                                    + resumeFile.getAbsolutePath());
+                        return ResponseEntity.ok(List.of());
                 }
-            }
+
+                String searchQuery = query.trim();
+
+                // -----------------------------------------------------
+                // Search by:
+                //
+                // 1. Candidate name
+                // 2. Email
+                // 3. Resume filename
+                // -----------------------------------------------------
+
+                List<Resume> results = resumeRepository
+                                .findByCandidateNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFileNameContainingIgnoreCase(
+                                                searchQuery,
+                                                searchQuery,
+                                                searchQuery);
+
+                // -----------------------------------------------------
+                // Console information
+                // -----------------------------------------------------
+
+                System.out.println("-------------------------------------");
+                System.out.println("Resume Search");
+                System.out.println(
+                                "Search Query : " + searchQuery);
+                System.out.println(
+                                "Results      : " + results.size());
+                System.out.println("-------------------------------------");
+
+                return ResponseEntity.ok(results);
         }
 
-        // -----------------------------------------------------
-        // Delete database record
-        // -----------------------------------------------------
+        // =========================================================
+        // DELETE RESUME
+        // =========================================================
 
-        resumeRepository.deleteById(id);
+        @DeleteMapping("/{id}")
+        public ResponseEntity<String> deleteResume(
+                        @PathVariable Long id) {
 
-        System.out.println(
-                "Resume database record deleted : "
-                        + id);
+                // -----------------------------------------------------
+                // Find resume
+                // -----------------------------------------------------
 
-        return ResponseEntity.ok(
-                "Resume deleted successfully.");
-    }
+                Resume resume = resumeRepository
+                                .findById(id)
+                                .orElse(null);
+
+                if (resume == null) {
+
+                        System.out.println(
+                                        "Resume not found : " + id);
+
+                        return ResponseEntity
+                                        .notFound()
+                                        .build();
+                }
+
+                // -----------------------------------------------------
+                // Resume information
+                // -----------------------------------------------------
+
+                String fileName = resume.getFileName();
+
+                System.out.println("-------------------------------------");
+                System.out.println("Deleting Resume");
+                System.out.println(
+                                "Resume ID : " + id);
+                System.out.println(
+                                "Candidate : "
+                                                + resume.getCandidateName());
+                System.out.println(
+                                "File Name : " + fileName);
+                System.out.println("-------------------------------------");
+
+                // -----------------------------------------------------
+                // Delete physical resume file
+                // -----------------------------------------------------
+
+                if (fileName != null
+                                && !fileName.isBlank()) {
+
+                        String resumeDirectory = System.getProperty("user.dir")
+                                        + File.separator
+                                        + "Uploads"
+                                        + File.separator
+                                        + "extracted";
+
+                        // Prevent path traversal
+                        fileName = new File(fileName)
+                                        .getName();
+
+                        File resumeFile = new File(
+                                        resumeDirectory,
+                                        fileName);
+
+                        System.out.println(
+                                        "Physical file : "
+                                                        + resumeFile.getAbsolutePath());
+
+                        if (resumeFile.exists()
+                                        && resumeFile.isFile()) {
+
+                                boolean deleted = resumeFile.delete();
+
+                                if (deleted) {
+
+                                        System.out.println(
+                                                        "Resume file deleted successfully.");
+
+                                } else {
+
+                                        System.out.println(
+                                                        "Could not delete resume file.");
+                                }
+
+                        } else {
+
+                                System.out.println(
+                                                "Physical resume file not found.");
+                        }
+                }
+
+                // -----------------------------------------------------
+                // Delete database record
+                // -----------------------------------------------------
+
+                resumeRepository.deleteById(id);
+
+                System.out.println(
+                                "Resume database record deleted : "
+                                                + id);
+
+                // -----------------------------------------------------
+                // Return response
+                // -----------------------------------------------------
+
+                return ResponseEntity.ok(
+                                "Resume deleted successfully.");
+        }
 }

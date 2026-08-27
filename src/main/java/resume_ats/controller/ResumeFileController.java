@@ -16,6 +16,12 @@ import java.io.File;
 @RequestMapping("/api/resume")
 public class ResumeFileController {
 
+    private static final String RESUME_DIR = System.getProperty("user.dir")
+            + File.separator
+            + "Uploads"
+            + File.separator
+            + "extracted";
+
     private final ResumeRepository resumeRepository;
 
     public ResumeFileController(
@@ -31,45 +37,74 @@ public class ResumeFileController {
         try {
 
             // ==========================================
-            // Find resume from database
+            // Find resume
             // ==========================================
 
-            Resume resume = resumeRepository.findById(id)
+            Resume resume = resumeRepository
+                    .findById(id)
                     .orElse(null);
 
             if (resume == null) {
 
-                return ResponseEntity.notFound().build();
-            }
-
-            // ==========================================
-            // Get stored file path
-            // ==========================================
-
-            String filePath = resume.getFilePath();
-
-            System.out.println("----------------------------------");
-            System.out.println("Resume ID     : " + id);
-            System.out.println("Candidate     : " + resume.getCandidateName());
-            System.out.println("File Name     : " + resume.getFileName());
-            System.out.println("Stored Path   : " + filePath);
-            System.out.println("----------------------------------");
-
-            if (filePath == null || filePath.isBlank()) {
+                System.out.println(
+                        "Resume not found in database : " + id);
 
                 return ResponseEntity.notFound().build();
             }
 
             // ==========================================
-            // Check physical file
+            // Get filename
             // ==========================================
 
-            File file = new File(filePath);
+            String fileName = resume.getFileName();
 
-            System.out.println("Absolute Path : " + file.getAbsolutePath());
-            System.out.println("File Exists   : " + file.exists());
+            if (fileName == null || fileName.isBlank()) {
 
-            if (!file.exists() || !file.isFile()) {
+                System.out.println(
+                        "Resume filename missing : " + id);
+
+                return ResponseEntity.notFound().build();
+            }
+
+            // ==========================================
+            // Prevent path traversal
+            // ==========================================
+
+            fileName = new File(fileName)
+                    .getName();
+
+            // ==========================================
+            // Construct actual resume path
+            // ==========================================
+
+            File resumeFile = new File(
+                    RESUME_DIR,
+                    fileName);
+
+            System.out.println("----------------------------------");
+            System.out.println(
+                    "Resume ID     : " + id);
+            System.out.println(
+                    "Candidate     : "
+                            + resume.getCandidateName());
+            System.out.println(
+                    "File Name     : " + fileName);
+            System.out.println(
+                    "Resume Folder : " + RESUME_DIR);
+            System.out.println(
+                    "Absolute Path : "
+                            + resumeFile.getAbsolutePath());
+            System.out.println(
+                    "File Exists   : "
+                            + resumeFile.exists());
+            System.out.println("----------------------------------");
+
+            // ==========================================
+            // Check file
+            // ==========================================
+
+            if (!resumeFile.exists()
+                    || !resumeFile.isFile()) {
 
                 return ResponseEntity.notFound().build();
             }
@@ -78,37 +113,40 @@ public class ResumeFileController {
             // Create resource
             // ==========================================
 
-            Resource resource = new FileSystemResource(file);
+            Resource resource = new FileSystemResource(resumeFile);
 
             // ==========================================
-            // Determine file type
+            // Determine content type
             // ==========================================
-
-            String fileName = file.getName().toLowerCase();
 
             MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
 
-            if (fileName.endsWith(".pdf")) {
+            if (fileName
+                    .toLowerCase()
+                    .endsWith(".pdf")) {
 
                 mediaType = MediaType.APPLICATION_PDF;
             }
 
             // ==========================================
-            // Return file
+            // Return PDF in browser
             // ==========================================
 
             return ResponseEntity.ok()
                     .contentType(mediaType)
                     .header(
                             HttpHeaders.CONTENT_DISPOSITION,
-                            "inline; filename=\"" + file.getName() + "\"")
+                            "inline; filename=\""
+                                    + fileName
+                                    + "\"")
                     .body(resource);
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
-            return ResponseEntity.internalServerError()
+            return ResponseEntity
+                    .internalServerError()
                     .build();
         }
     }

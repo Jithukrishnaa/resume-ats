@@ -1,0 +1,988 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account | AI ATS Resume Checker</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-family:
+                "Segoe UI",
+                Arial,
+                sans-serif;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #f5f7fb 0%,
+                    #eef2ff 100%
+                );
+
+            color: #172033;
+        }
+
+        .wrapper {
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+        }
+
+        /* =====================================================
+           BRAND
+        ===================================================== */
+
+        .brand {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .brand-icon {
+            width: 55px;
+            height: 55px;
+
+            margin: 0 auto 10px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            border-radius: 16px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
+
+            color: white;
+
+            font-size: 25px;
+
+            box-shadow:
+                0 10px 25px
+                rgba(37, 99, 235, .20);
+        }
+
+        .brand h1 {
+            margin: 0;
+
+            color: #1d4ed8;
+
+            font-size: 21px;
+        }
+
+        .brand p {
+            margin: 5px 0 0;
+
+            color: #64748b;
+
+            font-size: 11px;
+        }
+
+        /* =====================================================
+           CARD
+        ===================================================== */
+
+        .card {
+            background: white;
+
+            padding: 30px;
+
+            border-radius: 20px;
+
+            border:
+                1px solid #e5e7eb;
+
+            box-shadow:
+                0 20px 50px
+                rgba(15, 23, 42, .10);
+        }
+
+        .card h2 {
+            margin: 0;
+
+            font-size: 21px;
+        }
+
+        .subtitle {
+            margin: 6px 0 22px;
+
+            color: #64748b;
+
+            font-size: 12px;
+
+            line-height: 1.5;
+        }
+
+        /* =====================================================
+           MESSAGE
+        ===================================================== */
+
+        .message {
+            display: none;
+
+            padding: 11px 12px;
+
+            margin-bottom: 15px;
+
+            border-radius: 9px;
+
+            font-size: 11px;
+
+            line-height: 1.4;
+        }
+
+        .message.error {
+            display: block;
+
+            color: #dc2626;
+
+            background: #fef2f2;
+
+            border:
+                1px solid #fecaca;
+        }
+
+        .message.success {
+            display: block;
+
+            color: #15803d;
+
+            background: #ecfdf5;
+
+            border:
+                1px solid #bbf7d0;
+        }
+
+        /* =====================================================
+           FORM
+        ===================================================== */
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+
+            margin-bottom: 6px;
+
+            color: #334155;
+
+            font-size: 11px;
+
+            font-weight: 700;
+        }
+
+        input {
+            width: 100%;
+
+            padding: 11px 12px;
+
+            border:
+                1px solid #dbe1ea;
+
+            border-radius: 9px;
+
+            outline: none;
+
+            color: #172033;
+
+            background: white;
+
+            font-size: 12px;
+
+            transition: .2s ease;
+        }
+
+        input:focus {
+            border-color: #6366f1;
+
+            box-shadow:
+                0 0 0 3px
+                rgba(99, 102, 241, .10);
+        }
+
+        /* =====================================================
+           PASSWORD
+        ===================================================== */
+
+        .password-container {
+            position: relative;
+        }
+
+        .password-container input {
+            padding-right: 43px;
+        }
+
+        .show-password {
+            position: absolute;
+
+            right: 10px;
+            top: 50%;
+
+            transform:
+                translateY(-50%);
+
+            border: none;
+
+            background: transparent;
+
+            cursor: pointer;
+
+            color: #64748b;
+
+            font-size: 15px;
+
+            padding: 3px;
+        }
+
+        /* =====================================================
+           PASSWORD STRENGTH
+        ===================================================== */
+
+        .strength-container {
+            margin-top: 7px;
+        }
+
+        .strength-bar {
+            height: 4px;
+
+            width: 100%;
+
+            background: #e5e7eb;
+
+            border-radius: 10px;
+
+            overflow: hidden;
+        }
+
+        .strength-fill {
+            height: 100%;
+
+            width: 0%;
+
+            transition: .25s ease;
+        }
+
+        .strength-text {
+            margin-top: 4px;
+
+            color: #94a3b8;
+
+            font-size: 9px;
+        }
+
+        /* =====================================================
+           REGISTER BUTTON
+        ===================================================== */
+
+        .register-btn {
+            width: 100%;
+
+            margin-top: 7px;
+
+            padding: 13px;
+
+            border: none;
+
+            border-radius: 9px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    #2563eb,
+                    #4f46e5
+                );
+
+            color: white;
+
+            cursor: pointer;
+
+            font-size: 12px;
+
+            font-weight: 800;
+
+            box-shadow:
+                0 8px 18px
+                rgba(37, 99, 235, .18);
+
+            transition: .2s ease;
+        }
+
+        .register-btn:hover {
+            transform:
+                translateY(-1px);
+        }
+
+        .register-btn:disabled {
+            opacity: .6;
+
+            cursor: not-allowed;
+
+            transform: none;
+        }
+
+        /* =====================================================
+           LOGIN
+        ===================================================== */
+
+        .login-link {
+            margin-top: 18px;
+
+            padding-top: 17px;
+
+            border-top:
+                1px solid #eef0f4;
+
+            text-align: center;
+
+            color: #64748b;
+
+            font-size: 11px;
+        }
+
+        .login-link a {
+            color: #4f46e5;
+
+            text-decoration: none;
+
+            font-weight: 700;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .footer {
+            margin-top: 15px;
+
+            text-align: center;
+
+            color: #94a3b8;
+
+            font-size: 9px;
+        }
+
+        @media (max-width: 500px) {
+
+            .wrapper {
+                padding: 15px;
+            }
+
+            .card {
+                padding: 23px 20px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="wrapper">
+
+    <!-- =====================================================
+         BRAND
+    ====================================================== -->
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            ◈
+        </div>
+
+        <h1>
+            AI ATS Resume Checker
+        </h1>
+
+        <p>
+            Intelligent Recruitment Management
+        </p>
+
+    </div>
+
+
+    <!-- =====================================================
+         REGISTRATION CARD
+    ====================================================== -->
+
+    <div class="card">
+
+        <h2>
+            Create your account
+        </h2>
+
+        <p class="subtitle">
+            Register as an HR recruiter to access the ATS dashboard.
+        </p>
+
+
+        <!-- MESSAGE -->
+
+        <div
+            id="message"
+            class="message">
+        </div>
+
+
+        <form id="registerForm">
+
+            <!-- FULL NAME -->
+
+            <div class="form-group">
+
+                <label for="fullName">
+                    Full Name
+                </label>
+
+                <input
+                    id="fullName"
+                    type="text"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required>
+
+            </div>
+
+
+            <!-- USERNAME -->
+
+            <div class="form-group">
+
+                <label for="username">
+                    Username
+                </label>
+
+                <input
+                    id="username"
+                    type="text"
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                    required>
+
+            </div>
+
+
+            <!-- EMAIL -->
+
+            <div class="form-group">
+
+                <label for="email">
+                    Email Address
+                </label>
+
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="Enter your email address"
+                    autocomplete="email"
+                    required>
+
+            </div>
+
+
+            <!-- PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="password-container">
+
+                    <input
+                        id="password"
+                        type="password"
+                        placeholder="Minimum 8 characters"
+                        autocomplete="new-password"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('password', this)">
+
+                        👁
+
+                    </button>
+
+                </div>
+
+
+                <!-- PASSWORD STRENGTH -->
+
+                <div class="strength-container">
+
+                    <div class="strength-bar">
+
+                        <div
+                            id="strengthFill"
+                            class="strength-fill">
+                        </div>
+
+                    </div>
+
+                    <div
+                        id="strengthText"
+                        class="strength-text">
+
+                        Password strength
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- CONFIRM PASSWORD -->
+
+            <div class="form-group">
+
+                <label for="confirmPassword">
+                    Confirm Password
+                </label>
+
+                <div class="password-container">
+
+                    <input
+                        id="confirmPassword"
+                        type="password"
+                        placeholder="Re-enter your password"
+                        autocomplete="new-password"
+                        required>
+
+                    <button
+                        type="button"
+                        class="show-password"
+                        onclick="togglePassword('confirmPassword', this)">
+
+                        👁
+
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- BUTTON -->
+
+            <button
+                type="submit"
+                id="registerButton"
+                class="register-btn">
+
+                CREATE ACCOUNT
+
+            </button>
+
+        </form>
+
+
+        <!-- LOGIN -->
+
+        <div class="login-link">
+
+            Already have an account?
+
+            <a href="/login.html">
+                Login
+            </a>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer">
+
+        © 2026 AI ATS Resume Checker
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // =========================================================
+    // ELEMENTS
+    // =========================================================
+
+    const form =
+        document.getElementById(
+            "registerForm"
+        );
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+    const password =
+        document.getElementById(
+            "password"
+        );
+
+    const confirmPassword =
+        document.getElementById(
+            "confirmPassword"
+        );
+
+    const strengthFill =
+        document.getElementById(
+            "strengthFill"
+        );
+
+    const strengthText =
+        document.getElementById(
+            "strengthText"
+        );
+
+
+    // =========================================================
+    // PASSWORD VISIBILITY
+    // =========================================================
+
+    function togglePassword(
+        fieldId,
+        button
+    ) {
+
+        const field =
+            document.getElementById(
+                fieldId
+            );
+
+        if (field.type === "password") {
+
+            field.type = "text";
+
+            button.textContent = "🙈";
+
+        } else {
+
+            field.type = "password";
+
+            button.textContent = "👁";
+        }
+    }
+
+
+    // =========================================================
+    // PASSWORD STRENGTH
+    // =========================================================
+
+    password.addEventListener(
+        "input",
+        function () {
+
+            const value =
+                password.value;
+
+            let score = 0;
+
+            if (value.length >= 8) {
+                score++;
+            }
+
+            if (/[A-Z]/.test(value)) {
+                score++;
+            }
+
+            if (/[a-z]/.test(value)) {
+                score++;
+            }
+
+            if (/[0-9]/.test(value)) {
+                score++;
+            }
+
+            if (/[^A-Za-z0-9]/.test(value)) {
+                score++;
+            }
+
+
+            if (score === 0) {
+
+                strengthFill.style.width =
+                    "0%";
+
+                strengthText.textContent =
+                    "Password strength";
+
+            } else if (score <= 2) {
+
+                strengthFill.style.width =
+                    "35%";
+
+                strengthText.textContent =
+                    "Weak password";
+
+                strengthText.style.color =
+                    "#dc2626";
+
+            } else if (score <= 3) {
+
+                strengthFill.style.width =
+                    "65%";
+
+                strengthText.textContent =
+                    "Medium password";
+
+                strengthText.style.color =
+                    "#d97706";
+
+            } else {
+
+                strengthFill.style.width =
+                    "100%";
+
+                strengthText.textContent =
+                    "Strong password";
+
+                strengthText.style.color =
+                    "#16a34a";
+            }
+        }
+    );
+
+
+    // =========================================================
+    // DISPLAY MESSAGE
+    // =========================================================
+
+    function showMessage(
+        text,
+        type
+    ) {
+
+        message.style.display =
+            "block";
+
+        message.className =
+            "message " + type;
+
+        message.textContent =
+            text;
+    }
+
+
+    // =========================================================
+    // REGISTER
+    // =========================================================
+
+    form.addEventListener(
+        "submit",
+        async function (event) {
+
+            event.preventDefault();
+
+
+            const fullName =
+                document.getElementById(
+                    "fullName"
+                ).value.trim();
+
+
+            const username =
+                document.getElementById(
+                    "username"
+                ).value.trim();
+
+
+            const email =
+                document.getElementById(
+                    "email"
+                ).value.trim();
+
+
+            const passwordValue =
+                password.value;
+
+
+            const confirmValue =
+                confirmPassword.value;
+
+
+            // -----------------------------------------------
+            // Password validation
+            // -----------------------------------------------
+
+            if (passwordValue.length < 8) {
+
+                showMessage(
+                    "Password must contain at least 8 characters.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (
+                passwordValue !==
+                confirmValue
+            ) {
+
+                showMessage(
+                    "Passwords do not match.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // -----------------------------------------------
+            // Disable button
+            // -----------------------------------------------
+
+            const button =
+                document.getElementById(
+                    "registerButton"
+                );
+
+            button.disabled = true;
+
+            button.textContent =
+                "CREATING ACCOUNT...";
+
+
+            try {
+
+                const response =
+                    await fetch(
+                        "/api/auth/register",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+
+                                    fullName:
+                                        fullName,
+
+                                    username:
+                                        username,
+
+                                    email:
+                                        email,
+
+                                    password:
+                                        passwordValue
+
+                                })
+                        }
+                    );
+
+
+                const data =
+                    await response.json();
+
+
+                // -------------------------------------------
+                // Registration failed
+                // -------------------------------------------
+
+                if (!response.ok) {
+
+                    showMessage(
+                        data.message ||
+                        "Unable to create account.",
+                        "error"
+                    );
+
+                    button.disabled =
+                        false;
+
+                    button.textContent =
+                        "CREATE ACCOUNT";
+
+                    return;
+                }
+
+
+                // -------------------------------------------
+                // Success
+                // -------------------------------------------
+
+                showMessage(
+                    "Account created successfully. Redirecting to login...",
+                    "success"
+                );
+
+
+                form.reset();
+
+                strengthFill.style.width =
+                    "0%";
+
+                strengthText.textContent =
+                    "Password strength";
+
+
+                setTimeout(
+                    function () {
+
+                        window.location.href =
+                            "/login.html";
+
+                    },
+                    1800
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                showMessage(
+                    "Unable to connect to the server. Please try again.",
+                    "error"
+                );
+
+                button.disabled =
+                    false;
+
+                button.textContent =
+                    "CREATE ACCOUNT";
+            }
+
+        }
+    );
+
+</script>
+
+</body>
+
+</html>

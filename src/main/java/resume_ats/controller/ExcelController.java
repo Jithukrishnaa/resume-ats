@@ -25,16 +25,22 @@ public class ExcelController {
             byte[] excelFile = excelExportService.exportATSResults();
 
             return ResponseEntity.ok()
-                    .header(HttpHeaders.CONTENT_DISPOSITION,
-                            "attachment; filename=ATS_Report.xlsx")
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"ATS_Report.xlsx\"")
+                    .contentType(
+                            MediaType.parseMediaType(
+                                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"))
+                    .contentLength(excelFile.length)
                     .body(excelFile);
 
         } catch (Exception e) {
 
             e.printStackTrace();
 
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity
+                    .internalServerError()
+                    .build();
         }
     }
 }

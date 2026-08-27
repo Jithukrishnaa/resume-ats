@@ -5,172 +5,172 @@ import java.util.Set;
 
 public final class ATSConstants {
 
-    private ATSConstants() {
-    }
+        private ATSConstants() {
+        }
 
-    // =========================================================
-    // ATS SCORE WEIGHTAGE
-    // =========================================================
+        // =========================================================
+        // ATS SCORE WEIGHTAGE
+        // =========================================================
 
-    public static final double SKILL_WEIGHT = 45.0;
+        public static final double SKILL_WEIGHT = 45.0;
 
-    public static final double EXPERIENCE_WEIGHT = 20.0;
+        public static final double EXPERIENCE_WEIGHT = 20.0;
 
-    public static final double EDUCATION_WEIGHT = 10.0;
+        public static final double EDUCATION_WEIGHT = 10.0;
 
-    public static final double CERTIFICATION_WEIGHT = 10.0;
+        public static final double CERTIFICATION_WEIGHT = 10.0;
 
-    public static final double PROJECT_WEIGHT = 10.0;
+        public static final double PROJECT_WEIGHT = 10.0;
 
-    public static final double LOCATION_WEIGHT = 5.0;
+        public static final double LOCATION_WEIGHT = 5.0;
 
-    // =========================================================
-    // ATS RESULT
-    // =========================================================
+        // =========================================================
+        // ATS RESULT
+        // =========================================================
 
-    public static final double ATS_MAX_SCORE = 100.0;
+        public static final double ATS_MAX_SCORE = 100.0;
 
-    public static final double ATS_SHORTLIST_SCORE = 75.0;
+        public static final double ATS_SHORTLIST_SCORE = 85.0;
 
-    public static final double ATS_INTERVIEW_SCORE = 85.0;
+        public static final double ATS_INTERVIEW_SCORE = 85.0;
 
-    // =========================================================
-    // EXPERIENCE
-    // =========================================================
+        // =========================================================
+        // EXPERIENCE
+        // =========================================================
 
-    public static final int DEFAULT_EXPERIENCE = 0;
+        public static final int DEFAULT_EXPERIENCE = 0;
 
-    public static final int MAX_EXPERIENCE = 50;
+        public static final int MAX_EXPERIENCE = 50;
 
-    // =========================================================
-    // FILE TYPES
-    // =========================================================
+        // =========================================================
+        // FILE TYPES
+        // =========================================================
 
-    public static final Set<String> SUPPORTED_RESUME_TYPES = Set.of(
+        public static final Set<String> SUPPORTED_RESUME_TYPES = Set.of(
 
-            "pdf",
-            "doc",
-            "docx"
+                        "pdf",
+                        "doc",
+                        "docx"
 
-    );
+        );
 
-    public static final Set<String> SUPPORTED_JD_TYPES = Set.of(
+        public static final Set<String> SUPPORTED_JD_TYPES = Set.of(
 
-            "pdf"
+                        "pdf"
 
-    );
+        );
 
-    // =========================================================
-    // MAX FILE SIZE
-    // =========================================================
+        // =========================================================
+        // MAX FILE SIZE
+        // =========================================================
 
-    public static final long MAX_FILE_SIZE_MB = 20;
+        public static final long MAX_FILE_SIZE_MB = 20;
 
-    // =========================================================
-    // EMPLOYMENT TYPES
-    // =========================================================
+        // =========================================================
+        // EMPLOYMENT TYPES
+        // =========================================================
 
-    public static final List<String> EMPLOYMENT_TYPES = List.of(
+        public static final List<String> EMPLOYMENT_TYPES = List.of(
 
-            "Full Time",
-            "Part Time",
-            "Internship",
-            "Contract",
-            "Freelance",
-            "Temporary",
-            "Remote",
-            "Hybrid"
+                        "Full Time",
+                        "Part Time",
+                        "Internship",
+                        "Contract",
+                        "Freelance",
+                        "Temporary",
+                        "Remote",
+                        "Hybrid"
 
-    );
+        );
 
-    // =========================================================
-    // EDUCATION
-    // =========================================================
+        // =========================================================
+        // EDUCATION
+        // =========================================================
 
-    public static final List<String> EDUCATION_LEVELS = List.of(
+        public static final List<String> EDUCATION_LEVELS = List.of(
 
-            "PhD",
-            "Doctorate",
-            "M.Tech",
-            "ME",
-            "MBA",
-            "MCA",
-            "M.Sc",
-            "MS",
-            "B.Tech",
-            "BE",
-            "BCA",
-            "B.Sc",
-            "Diploma",
-            "12th",
-            "10th"
+                        "PhD",
+                        "Doctorate",
+                        "M.Tech",
+                        "ME",
+                        "MBA",
+                        "MCA",
+                        "M.Sc",
+                        "MS",
+                        "B.Tech",
+                        "BE",
+                        "BCA",
+                        "B.Sc",
+                        "Diploma",
+                        "12th",
+                        "10th"
 
-    );
+        );
 
-    // =========================================================
-    // ATS RECOMMENDATION
-    // =========================================================
+        // =========================================================
+        // ATS RECOMMENDATION
+        // =========================================================
 
-    public static final String EXCELLENT = "Excellent Match";
+        public static final String EXCELLENT = "Excellent Match";
 
-    public static final String HIGHLY_RECOMMENDED = "Highly Recommended";
+        public static final String HIGHLY_RECOMMENDED = "Highly Recommended";
 
-    public static final String RECOMMENDED = "Recommended";
+        public static final String RECOMMENDED = "Recommended";
 
-    public static final String NEEDS_REVIEW = "Needs Review";
+        public static final String NEEDS_REVIEW = "Needs Review";
 
-    public static final String NOT_RECOMMENDED = "Not Recommended";
+        public static final String NOT_RECOMMENDED = "Not Recommended";
 
-    // =========================================================
-    // COMMON RESUME HEADERS
-    // =========================================================
+        // =========================================================
+        // COMMON RESUME HEADERS
+        // =========================================================
 
-    public static final List<String> RESUME_SECTIONS = List.of(
+        public static final List<String> RESUME_SECTIONS = List.of(
 
-            "summary",
-            "objective",
-            "profile",
-            "education",
-            "experience",
-            "projects",
-            "skills",
-            "technical skills",
-            "professional experience",
-            "internship",
-            "achievements",
-            "certifications",
-            "languages",
-            "interests",
-            "declaration"
+                        "summary",
+                        "objective",
+                        "profile",
+                        "education",
+                        "experience",
+                        "projects",
+                        "skills",
+                        "technical skills",
+                        "professional experience",
+                        "internship",
+                        "achievements",
+                        "certifications",
+                        "languages",
+                        "interests",
+                        "declaration"
 
-    );
+        );
 
-    // =========================================================
-    // COMMON JD HEADERS
-    // =========================================================
+        // =========================================================
+        // COMMON JD HEADERS
+        // =========================================================
 
-    public static final List<String> JD_SECTIONS = List.of(
+        public static final List<String> JD_SECTIONS = List.of(
 
-            "job description",
-            "roles",
-            "responsibilities",
-            "required skills",
-            "preferred skills",
-            "qualifications",
-            "experience",
-            "education",
-            "benefits",
-            "salary",
-            "location"
+                        "job description",
+                        "roles",
+                        "responsibilities",
+                        "required skills",
+                        "preferred skills",
+                        "qualifications",
+                        "experience",
+                        "education",
+                        "benefits",
+                        "salary",
+                        "location"
 
-    );
+        );
 
-    // =========================================================
-    // DEFAULT VALUES
-    // =========================================================
+        // =========================================================
+        // DEFAULT VALUES
+        // =========================================================
 
-    public static final String UNKNOWN = "Unknown";
+        public static final String UNKNOWN = "Unknown";
 
-    public static final String NOT_AVAILABLE = "N/A";
+        public static final String NOT_AVAILABLE = "N/A";
 
 }

@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Resume Preview - AI ATS</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            background: #f3f4f6;
+            color: #111827;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        /* =====================================================
+           TOP BAR
+        ===================================================== */
+
+        .topbar {
+            height: 65px;
+            background: #111827;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 30px;
+
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .topbar-title {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .topbar-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .top-btn {
+            border: none;
+            border-radius: 7px;
+
+            padding: 10px 16px;
+
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .edit-btn {
+            background: #374151;
+            color: white;
+        }
+
+        .generate-btn {
+            background: #7c3aed;
+            color: white;
+        }
+
+        .download-btn {
+            background: #2563eb;
+            color: white;
+        }
+
+        .top-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* =====================================================
+           PAGE
+        ===================================================== */
+
+        .page {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .status {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+
+            margin-bottom: 20px;
+
+            border-left: 4px solid #7c3aed;
+
+            box-shadow:
+                0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* =====================================================
+           RESUME
+        ===================================================== */
+
+        .resume {
+            background: white;
+
+            width: 100%;
+
+            min-height: 1120px;
+
+            padding: 55px 65px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.12);
+        }
+
+        /* =====================================================
+           HEADER
+        ===================================================== */
+
+        .resume-header {
+            text-align: center;
+
+            border-bottom:
+                2px solid #111827;
+
+            padding-bottom: 20px;
+
+            margin-bottom: 25px;
+        }
+
+        .name {
+            font-size: 32px;
+            font-weight: 800;
+
+            text-transform: uppercase;
+
+            letter-spacing: 1px;
+
+            margin-bottom: 7px;
+        }
+
+        .title {
+            font-size: 17px;
+            color: #374151;
+
+            margin-bottom: 12px;
+        }
+
+        .contact {
+            display: flex;
+
+            justify-content: center;
+
+            flex-wrap: wrap;
+
+            gap: 7px 15px;
+
+            font-size: 12px;
+
+            color: #374151;
+        }
+
+        .contact a {
+            color: #374151;
+            text-decoration: none;
+        }
+
+        /* =====================================================
+           SECTIONS
+        ===================================================== */
+
+        .section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 15px;
+
+            font-weight: 800;
+
+            letter-spacing: 1px;
+
+            text-transform: uppercase;
+
+            border-bottom:
+                1px solid #9ca3af;
+
+            padding-bottom: 5px;
+
+            margin-bottom: 12px;
+        }
+
+        .section-content {
+            font-size: 13px;
+
+            line-height: 1.55;
+
+            color: #1f2937;
+        }
+
+        /* =====================================================
+           EXPERIENCE
+        ===================================================== */
+
+        .entry {
+            margin-bottom: 18px;
+        }
+
+        .entry:last-child {
+            margin-bottom: 0;
+        }
+
+        .entry-header {
+            display: flex;
+
+            justify-content: space-between;
+
+            gap: 15px;
+
+            margin-bottom: 3px;
+        }
+
+        .entry-title {
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .entry-date {
+            font-size: 12px;
+            white-space: nowrap;
+            color: #4b5563;
+        }
+
+        .entry-company {
+            font-weight: 600;
+
+            font-size: 13px;
+
+            color: #374151;
+
+            margin-bottom: 5px;
+        }
+
+        .entry-location {
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .entry-description {
+            margin-top: 7px;
+
+            white-space: pre-line;
+
+            font-size: 12.5px;
+
+            line-height: 1.55;
+        }
+
+        /* =====================================================
+           PROJECTS
+        ===================================================== */
+
+        .project-name {
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+        .project-tech {
+            font-size: 12px;
+
+            color: #4b5563;
+
+            margin: 3px 0;
+        }
+
+        .project-link {
+            font-size: 12px;
+            color: #2563eb;
+        }
+
+        /* =====================================================
+           EDUCATION
+        ===================================================== */
+
+        .education-degree {
+            font-weight: 700;
+
+            font-size: 14px;
+        }
+
+        .education-institution {
+            font-size: 13px;
+
+            font-weight: 600;
+
+            margin-top: 3px;
+        }
+
+        .education-details {
+            font-size: 12px;
+
+            color: #4b5563;
+
+            margin-top: 3px;
+        }
+
+        /* =====================================================
+           SKILLS
+        ===================================================== */
+
+        .skills {
+            line-height: 1.8;
+        }
+
+        .skill {
+            display: inline-block;
+
+            margin-right: 8px;
+        }
+
+        /* =====================================================
+           EMPTY
+        ===================================================== */
+
+        .empty {
+            color: #9ca3af;
+
+            font-style: italic;
+
+            font-size: 12px;
+        }
+
+        /* =====================================================
+           LOADING
+        ===================================================== */
+
+        .loading {
+            position: fixed;
+
+            inset: 0;
+
+            background:
+                rgba(255, 255, 255, 0.9);
+
+            display: flex;
+
+            align-items: center;
+            justify-content: center;
+
+            z-index: 999;
+        }
+
+        .loading-box {
+            background: white;
+
+            padding: 30px 45px;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 5px 25px rgba(0, 0, 0, 0.15);
+
+            text-align: center;
+        }
+
+        .spinner {
+            width: 38px;
+            height: 38px;
+
+            border: 4px solid #e5e7eb;
+
+            border-top-color: #7c3aed;
+
+            border-radius: 50%;
+
+            animation:
+                spin 0.8s linear infinite;
+
+            margin:
+                0 auto 15px;
+        }
+
+        @keyframes spin {
+
+            to {
+                transform: rotate(360deg);
+            }
+
+        }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                height: auto;
+
+                padding: 15px;
+
+                flex-direction: column;
+
+                gap: 12px;
+            }
+
+            .topbar-actions {
+                width: 100%;
+            }
+
+            .top-btn {
+                flex: 1;
+            }
+
+            .resume {
+                padding: 30px 25px;
+            }
+
+            .name {
+                font-size: 25px;
+            }
+
+            .entry-header {
+                flex-direction: column;
+                gap: 3px;
+            }
+
+        }
+
+        /* =====================================================
+           PRINT
+        ===================================================== */
+
+        @media print {
+
+            body {
+                background: white;
+            }
+
+            .topbar,
+            .status {
+                display: none !important;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0;
+                max-width: none;
+            }
+
+            .resume {
+                box-shadow: none;
+                padding: 35px 45px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     LOADING
+========================================================= -->
+
+<div
+    class="loading"
+    id="loading">
+
+    <div class="loading-box">
+
+        <div class="spinner"></div>
+
+        <div>
+            Preparing resume...
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     TOP BAR
+========================================================= -->
+
+<div class="topbar">
+
+    <div class="topbar-title">
+
+        ✨ AI Resume Builder
+
+    </div>
+
+
+    <div class="topbar-actions">
+
+        <button
+            class="top-btn edit-btn"
+            onclick="editProfile()">
+
+            ✏️ Edit Profile
+
+        </button>
+
+
+        <button
+            class="top-btn generate-btn"
+            onclick="generateAgain()">
+
+            ✨ Generate Again
+
+        </button>
+
+
+        <button
+            class="top-btn download-btn"
+            onclick="downloadPDF()">
+
+            📄 Download PDF
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     PAGE
+========================================================= -->
+
+<div class="page">
+
+
+    <div class="status">
+
+        <strong>
+            Resume Preview
+        </strong>
+
+        <span>
+            Review your generated resume before downloading.
+        </span>
+
+    </div>
+
+
+    <!-- =====================================================
+         RESUME
+    ====================================================== -->
+
+    <div
+        class="resume"
+        id="resume">
+
+
+        <!-- HEADER -->
+
+        <div class="resume-header">
+
+            <div
+                class="name"
+                id="resumeName">
+            </div>
+
+
+            <div
+                class="title"
+                id="resumeTitle">
+            </div>
+
+
+            <div
+                class="contact"
+                id="resumeContact">
+            </div>
+
+        </div>
+
+
+        <!-- SUMMARY -->
+
+        <div
+            class="section"
+            id="summarySection">
+
+            <div class="section-title">
+                Professional Summary
+            </div>
+
+            <div
+                class="section-content"
+                id="resumeSummary">
+            </div>
+
+        </div>
+
+
+        <!-- OBJECTIVE -->
+
+        <div
+            class="section"
+            id="objectiveSection">
+
+            <div class="section-title">
+                Career Objective
+            </div>
+
+            <div
+                class="section-content"
+                id="resumeObjective">
+            </div>
+
+        </div>
+
+
+        <!-- EXPERIENCE -->
+
+        <div
+            class="section"
+            id="experienceSection">
+
+            <div class="section-title">
+                Professional Experience
+            </div>
+
+            <div id="resumeExperience">
+            </div>
+
+        </div>
+
+
+        <!-- PROJECTS -->
+
+        <div
+            class="section"
+            id="projectsSection">
+
+            <div class="section-title">
+                Projects
+            </div>
+
+            <div id="resumeProjects">
+            </div>
+
+        </div>
+
+
+        <!-- EDUCATION -->
+
+        <div
+            class="section"
+            id="educationSection">
+
+            <div class="section-title">
+                Education
+            </div>
+
+            <div id="resumeEducation">
+            </div>
+
+        </div>
+
+
+        <!-- SKILLS -->
+
+        <div
+            class="section"
+            id="skillsSection">
+
+            <div class="section-title">
+                Technical Skills
+            </div>
+
+            <div
+                class="section-content skills"
+                id="resumeSkills">
+            </div>
+
+        </div>
+
+
+        <!-- CERTIFICATIONS -->
+
+        <div
+            class="section"
+            id="certificationsSection">
+
+            <div class="section-title">
+                Certifications
+            </div>
+
+            <div id="resumeCertifications">
+            </div>
+
+        </div>
+
+
+        <!-- LANGUAGES -->
+
+        <div
+            class="section"
+            id="languagesSection">
+
+            <div class="section-title">
+                Languages
+            </div>
+
+            <div
+                class="section-content"
+                id="resumeLanguages">
+            </div>
+
+        </div>
+
+
+        <!-- ACHIEVEMENTS -->
+
+        <div
+            class="section"
+            id="achievementsSection">
+
+            <div class="section-title">
+                Achievements
+            </div>
+
+            <div
+                class="section-content"
+                id="resumeAchievements">
+            </div>
+
+        </div>
+
+
+    </div>
+
+</div>
+
+
+<script>
+
+
+// ============================================================
+// GLOBAL
+// ============================================================
+
+let generatedResume = null;
+
+
+// ============================================================
+// PAGE LOAD
+// ============================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    loadResume
+);
+
+
+// ============================================================
+// LOAD GENERATED RESUME
+// ============================================================
+
+function loadResume() {
+
+    const stored =
+        sessionStorage.getItem(
+            "generatedResume"
+        );
+
+
+    if (!stored) {
+
+        alert(
+            "No generated resume was found."
+        );
+
+        window.location.href =
+            "/profile.html";
+
+        return;
+    }
+
+
+    try {
+
+        generatedResume =
+            JSON.parse(stored);
+
+        renderResume(
+            generatedResume
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Resume parsing error:",
+            error
+        );
+
+        alert(
+            "Unable to load generated resume."
+        );
+
+        window.location.href =
+            "/profile.html";
+
+    }
+
+}
+
+
+// ============================================================
+// RENDER RESUME
+// ============================================================
+
+function renderResume(resume) {
+
+
+    // ========================================================
+    // HEADER
+    // ========================================================
+
+    document.getElementById(
+        "resumeName"
+    ).textContent =
+        resume.fullName ||
+        "Your Name";
+
+
+    document.getElementById(
+        "resumeTitle"
+    ).textContent =
+        resume.professionalTitle ||
+        "";
+
+
+    renderContact(
+        resume
+    );
+
+
+    // ========================================================
+    // SUMMARY
+    // ========================================================
+
+    renderTextSection(
+        "summarySection",
+        "resumeSummary",
+        resume.summary
+    );
+
+
+    // ========================================================
+    // OBJECTIVE
+    // ========================================================
+
+    renderTextSection(
+        "objectiveSection",
+        "resumeObjective",
+        resume.objective
+    );
+
+
+    // ========================================================
+    // EXPERIENCE
+    // ========================================================
+
+    renderExperience(
+        resume.experience
+    );
+
+
+    // ========================================================
+    // PROJECTS
+    // ========================================================
+
+    renderProjects(
+        resume.projects
+    );
+
+
+    // ========================================================
+    // EDUCATION
+    // ========================================================
+
+    renderEducation(
+        resume.education
+    );
+
+
+    // ========================================================
+    // SKILLS
+    // ========================================================
+
+    renderSkills(
+        resume.skills
+    );
+
+
+    // ========================================================
+    // CERTIFICATIONS
+    // ========================================================
+
+    renderCertifications(
+        resume.certifications
+    );
+
+
+    // ========================================================
+    // LANGUAGES
+    // ========================================================
+
+    renderTextSection(
+        "languagesSection",
+        "resumeLanguages",
+        resume.languages
+    );
+
+
+    // ========================================================
+    // ACHIEVEMENTS
+    // ========================================================
+
+    renderTextSection(
+        "achievementsSection",
+        "resumeAchievements",
+        resume.achievements
+    );
+
+}
+
+
+// ============================================================
+// CONTACT
+// ============================================================
+
+function renderContact(resume) {
+
+    const container =
+        document.getElementById(
+            "resumeContact"
+        );
+
+
+    container.innerHTML = "";
+
+
+    const values = [];
+
+
+    if (resume.email) {
+
+        values.push(
+            createContactLink(
+                resume.email,
+                "mailto:" + resume.email
+            )
+        );
+
+    }
+
+
+    if (resume.phone) {
+
+        values.push(
+            escapeHtml(
+                resume.phone
+            )
+        );
+
+    }
+
+
+    if (resume.location) {
+
+        values.push(
+            escapeHtml(
+                resume.location
+            )
+        );
+
+    }
+
+
+    if (resume.linkedin) {
+
+        values.push(
+            createContactLink(
+                "LinkedIn",
+                resume.linkedin
+            )
+        );
+
+    }
+
+
+    if (resume.github) {
+
+        values.push(
+            createContactLink(
+                "GitHub",
+                resume.github
+            )
+        );
+
+    }
+
+
+    if (resume.portfolio) {
+
+        values.push(
+            createContactLink(
+                "Portfolio",
+                resume.portfolio
+            )
+        );
+
+    }
+
+
+    container.innerHTML =
+        values.join(" • ");
+
+}
+
+
+// ============================================================
+// TEXT SECTION
+// ============================================================
+
+function renderTextSection(
+    sectionId,
+    elementId,
+    value
+) {
+
+    const section =
+        document.getElementById(
+            sectionId
+        );
+
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!value || !value.trim()) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    element.textContent =
+        value;
+
+}
+
+
+// ============================================================
+// EXPERIENCE
+// ============================================================
+
+function renderExperience(
+    experience
+) {
+
+    const section =
+        document.getElementById(
+            "experienceSection"
+        );
+
+
+    const container =
+        document.getElementById(
+            "resumeExperience"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !experience ||
+        experience.length === 0
+    ) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    experience.forEach(
+        item => {
+
+            const entry =
+                document.createElement(
+                    "div"
+                );
+
+
+            entry.className =
+                "entry";
+
+
+            const start =
+                item.startDate || "";
+
+
+            const end =
+                item.currentlyWorking
+                    ? "Present"
+                    : (
+                        item.endDate ||
+                        ""
+                    );
+
+
+            const dates =
+                start || end
+                    ? `${start}${start && end ? " - " : ""}${end}`
+                    : "";
+
+
+            entry.innerHTML = `
+
+                <div class="entry-header">
+
+                    <div class="entry-title">
+
+                        ${escapeHtml(
+                            item.jobTitle || ""
+                        )}
+
+                    </div>
+
+                    <div class="entry-date">
+
+                        ${escapeHtml(
+                            dates
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div class="entry-company">
+
+                    ${escapeHtml(
+                        item.company || ""
+                    )}
+
+                    ${
+                        item.location
+                            ? " | " +
+                              escapeHtml(
+                                  item.location
+                              )
+                            : ""
+                    }
+
+                </div>
+
+
+                ${
+                    item.description
+                        ? `
+                            <div class="entry-description">
+                                ${escapeHtml(
+                                    item.description
+                                )}
+                            </div>
+                          `
+                        : ""
+                }
+
+            `;
+
+
+            container.appendChild(
+                entry
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// PROJECTS
+// ============================================================
+
+function renderProjects(
+    projects
+) {
+
+    const section =
+        document.getElementById(
+            "projectsSection"
+        );
+
+
+    const container =
+        document.getElementById(
+            "resumeProjects"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !projects ||
+        projects.length === 0
+    ) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    projects.forEach(
+        project => {
+
+            const entry =
+                document.createElement(
+                    "div"
+                );
+
+
+            entry.className =
+                "entry";
+
+
+            entry.innerHTML = `
+
+                <div class="project-name">
+
+                    ${escapeHtml(
+                        project.projectName || ""
+                    )}
+
+                </div>
+
+
+                ${
+                    project.technologies
+                        ? `
+                            <div class="project-tech">
+                                Technologies:
+                                ${escapeHtml(
+                                    project.technologies
+                                )}
+                            </div>
+                          `
+                        : ""
+                }
+
+
+                ${
+                    project.projectLink
+                        ? `
+                            <div>
+                                <a
+                                    class="project-link"
+                                    href="${escapeAttribute(
+                                        project.projectLink
+                                    )}"
+                                    target="_blank">
+
+                                    ${escapeHtml(
+                                        project.projectLink
+                                    )}
+
+                                </a>
+                            </div>
+                          `
+                        : ""
+                }
+
+
+                ${
+                    project.description
+                        ? `
+                            <div class="entry-description">
+                                ${escapeHtml(
+                                    project.description
+                                )}
+                            </div>
+                          `
+                        : ""
+                }
+
+            `;
+
+
+            container.appendChild(
+                entry
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// EDUCATION
+// ============================================================
+
+function renderEducation(
+    education
+) {
+
+    const section =
+        document.getElementById(
+            "educationSection"
+        );
+
+
+    const container =
+        document.getElementById(
+            "resumeEducation"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !education ||
+        education.length === 0
+    ) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    education.forEach(
+        item => {
+
+            const entry =
+                document.createElement(
+                    "div"
+                );
+
+
+            entry.className =
+                "entry";
+
+
+            const years =
+                [
+                    item.startYear,
+                    item.endYear
+                ]
+                .filter(Boolean)
+                .join(" - ");
+
+
+            entry.innerHTML = `
+
+                <div class="education-degree">
+
+                    ${escapeHtml(
+                        item.degree || ""
+                    )}
+
+                </div>
+
+
+                <div class="education-institution">
+
+                    ${escapeHtml(
+                        item.institution || ""
+                    )}
+
+                </div>
+
+
+                <div class="education-details">
+
+                    ${
+                        item.location
+                            ? escapeHtml(
+                                item.location
+                              )
+                            : ""
+                    }
+
+                    ${
+                        years
+                            ? " | " +
+                              escapeHtml(
+                                  years
+                              )
+                            : ""
+                    }
+
+                    ${
+                        item.grade
+                            ? " | " +
+                              escapeHtml(
+                                  item.grade
+                              )
+                            : ""
+                    }
+
+                </div>
+
+            `;
+
+
+            container.appendChild(
+                entry
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// SKILLS
+// ============================================================
+
+function renderSkills(
+    skills
+) {
+
+    const section =
+        document.getElementById(
+            "skillsSection"
+        );
+
+
+    const container =
+        document.getElementById(
+            "resumeSkills"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !skills ||
+        !skills.trim()
+    ) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    const values =
+        skills
+            .split(",")
+            .map(
+                value =>
+                    value.trim()
+            )
+            .filter(Boolean);
+
+
+    values.forEach(
+        skill => {
+
+            const span =
+                document.createElement(
+                    "span"
+                );
+
+
+            span.className =
+                "skill";
+
+
+            span.textContent =
+                skill;
+
+
+            container.appendChild(
+                span
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// CERTIFICATIONS
+// ============================================================
+
+function renderCertifications(
+    certifications
+) {
+
+    const section =
+        document.getElementById(
+            "certificationsSection"
+        );
+
+
+    const container =
+        document.getElementById(
+            "resumeCertifications"
+        );
+
+
+    container.innerHTML = "";
+
+
+    if (
+        !certifications ||
+        certifications.length === 0
+    ) {
+
+        section.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    section.style.display =
+        "block";
+
+
+    certifications.forEach(
+        item => {
+
+            const entry =
+                document.createElement(
+                    "div"
+                );
+
+
+            entry.className =
+                "entry";
+
+
+            entry.innerHTML = `
+
+                <div class="entry-title">
+
+                    ${escapeHtml(
+                        item.certificationName || ""
+                    )}
+
+                </div>
+
+
+                ${
+                    item.issuingOrganization
+                        ? `
+                            <div class="entry-company">
+                                ${escapeHtml(
+                                    item.issuingOrganization
+                                )}
+                            </div>
+                          `
+                        : ""
+                }
+
+
+                ${
+                    item.issueDate
+                        ? `
+                            <div class="entry-details">
+                                Issued:
+                                ${escapeHtml(
+                                    item.issueDate
+                                )}
+                            </div>
+                          `
+                        : ""
+                }
+
+
+                ${
+                    item.credentialUrl
+                        ? `
+                            <div>
+                                <a
+                                    class="project-link"
+                                    href="${escapeAttribute(
+                                        item.credentialUrl
+                                    )}"
+                                    target="_blank">
+
+                                    Credential
+
+                                </a>
+                            </div>
+                          `
+                        : ""
+                }
+
+            `;
+
+
+            container.appendChild(
+                entry
+            );
+
+        }
+    );
+
+}
+
+
+// ============================================================
+// EDIT PROFILE
+// ============================================================
+
+function editProfile() {
+
+    window.location.href =
+        "/profile.html";
+
+}
+
+
+// ============================================================
+// GENERATE AGAIN
+// ============================================================
+
+async function generateAgain() {
+
+    window.location.href =
+        "/profile.html";
+
+}
+
+
+// ============================================================
+// DOWNLOAD PDF
+// ============================================================
+
+function downloadPDF() {
+
+    /*
+     * PDF endpoint will be connected in the
+     * next step.
+     */
+
+    alert(
+        "PDF download will be connected next."
+    );
+
+}
+
+
+// ============================================================
+// CONTACT LINK
+// ============================================================
+
+function createContactLink(
+    text,
+    url
+) {
+
+    return `
+        <a
+            href="${escapeAttribute(url)}"
+            target="_blank">
+
+            ${escapeHtml(text)}
+
+        </a>
+    `;
+
+}
+
+
+// ============================================================
+// ESCAPE HTML
+// ============================================================
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+// ============================================================
+// ESCAPE ATTRIBUTE
+// ============================================================
+
+function escapeAttribute(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        );
+
+}
+
+</script>
+
+
+</body>
+
+</html>

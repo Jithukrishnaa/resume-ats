@@ -16,7 +16,10 @@ import java.io.IOException;
 @RequestMapping("/api/resumes")
 public class ResumeController {
 
-        // Same folder used by bulk ZIP extraction
+        // =========================================================
+        // RESUME UPLOAD DIRECTORY
+        // =========================================================
+
         private static final String UPLOAD_DIR = System.getProperty("user.dir")
                         + File.separator
                         + "Uploads"
@@ -25,6 +28,10 @@ public class ResumeController {
 
         private final ResumeRepository resumeRepository;
         private final ResumeService resumeService;
+
+        // =========================================================
+        // CONSTRUCTOR
+        // =========================================================
 
         public ResumeController(
                         ResumeRepository resumeRepository,
@@ -35,7 +42,7 @@ public class ResumeController {
         }
 
         // =========================================================
-        // SINGLE RESUME PDF UPLOAD
+        // SINGLE RESUME UPLOAD
         // =========================================================
 
         @PostMapping("/upload")
@@ -44,9 +51,9 @@ public class ResumeController {
 
                 try {
 
-                        // =====================================================
-                        // 1. Validate file
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Validate file
+                        // -----------------------------------------------------
 
                         if (file == null || file.isEmpty()) {
 
@@ -63,9 +70,9 @@ public class ResumeController {
                                                 .body("Invalid resume file.");
                         }
 
-                        // =====================================================
-                        // 2. Check PDF
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Validate PDF
+                        // -----------------------------------------------------
 
                         String lowerFileName = originalFileName.toLowerCase();
 
@@ -75,9 +82,9 @@ public class ResumeController {
                                                 .body("Only PDF resumes are allowed.");
                         }
 
-                        // =====================================================
-                        // 3. Create upload directory
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Create upload directory
+                        // -----------------------------------------------------
 
                         File uploadDir = new File(UPLOAD_DIR);
 
@@ -85,8 +92,7 @@ public class ResumeController {
 
                                 boolean created = uploadDir.mkdirs();
 
-                                if (!created
-                                                && !uploadDir.exists()) {
+                                if (!created && !uploadDir.exists()) {
 
                                         return ResponseEntity
                                                         .internalServerError()
@@ -95,9 +101,9 @@ public class ResumeController {
                                 }
                         }
 
-                        // =====================================================
-                        // 4. Create safe filename
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Clean filename
+                        // -----------------------------------------------------
 
                         String fileName = new File(originalFileName).getName();
 
@@ -109,15 +115,16 @@ public class ResumeController {
                                         uploadDir,
                                         fileName);
 
-                        // =====================================================
-                        // 5. Save PDF
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Save file
+                        // -----------------------------------------------------
 
                         file.transferTo(destination);
 
                         System.out.println("-------------------------------------");
                         System.out.println("Single Resume Upload");
-                        System.out.println("File Name : " + fileName);
+                        System.out.println(
+                                        "File Name : " + fileName);
                         System.out.println(
                                         "File Path : "
                                                         + destination.getAbsolutePath());
@@ -126,9 +133,9 @@ public class ResumeController {
                                                         + destination.exists());
                         System.out.println("-------------------------------------");
 
-                        // =====================================================
-                        // 6. Extract resume text
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Extract text
+                        // -----------------------------------------------------
 
                         String extractedText = resumeService.extractText(
                                         destination);
@@ -136,7 +143,6 @@ public class ResumeController {
                         if (extractedText == null
                                         || extractedText.isBlank()) {
 
-                                // Delete invalid/empty uploaded file
                                 if (destination.exists()) {
                                         destination.delete();
                                 }
@@ -146,9 +152,9 @@ public class ResumeController {
                                                                 "Unable to extract text from the resume.");
                         }
 
-                        // =====================================================
-                        // 7. Limit extremely large resumes
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Limit very large resumes
+                        // -----------------------------------------------------
 
                         if (extractedText.length() > 50000) {
 
@@ -157,38 +163,17 @@ public class ResumeController {
                                                 50000);
                         }
 
-                        // =====================================================
-                        // 8. Parse Resume
-                        // =====================================================
-
-                        /*
-                         * IMPORTANT:
-                         *
-                         * Pass BOTH:
-                         *
-                         * 1. Extracted resume text
-                         * 2. Original filename
-                         *
-                         * The ResumeParser will:
-                         *
-                         * - Try to find the candidate name
-                         * inside the resume.
-                         *
-                         * - Reject company names.
-                         *
-                         * - Reject job titles.
-                         *
-                         * - If no reliable name is found,
-                         * use the filename as fallback.
-                         */
+                        // -----------------------------------------------------
+                        // Parse resume
+                        // -----------------------------------------------------
 
                         Resume resume = ResumeParser.parse(
                                         extractedText,
                                         fileName);
 
-                        // =====================================================
-                        // 9. Duplicate email check
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Duplicate email check
+                        // -----------------------------------------------------
 
                         if (resume.getEmail() != null
                                         && !resume.getEmail().isBlank()
@@ -196,9 +181,7 @@ public class ResumeController {
                                                         .existsByEmailIgnoreCase(
                                                                         resume.getEmail())) {
 
-                                // Delete newly uploaded duplicate file
                                 if (destination.exists()) {
-
                                         destination.delete();
                                 }
 
@@ -207,64 +190,64 @@ public class ResumeController {
                                                                 + resume.getEmail());
                         }
 
-                        // =====================================================
-                        // 10. Store file information
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Store file information
+                        // -----------------------------------------------------
 
-                        resume.setFileName(
-                                        fileName);
+                        resume.setFileName(fileName);
 
                         /*
-                         * Store ONLY the filename.
+                         * Store the filename.
                          *
-                         * Example:
-                         *
-                         * Amaldev.pdf
-                         *
-                         * NOT:
-                         *
-                         * C:\Users\...\Uploads\extracted\Amaldev.pdf
+                         * The ResumeFileController can resolve this
+                         * against Uploads/extracted.
                          */
 
-                        resume.setFilePath(
-                                        fileName);
+                        resume.setFilePath(fileName);
 
-                        // =====================================================
-                        // 11. Save resume to database
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Save to database
+                        // -----------------------------------------------------
 
-                        resumeRepository.save(
-                                        resume);
+                        resumeRepository.save(resume);
 
-                        // =====================================================
-                        // 12. Console information
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Console information
+                        // -----------------------------------------------------
 
                         System.out.println("-------------------------------------");
                         System.out.println(
                                         "Resume Imported Successfully");
+
+                        System.out.println(
+                                        "Resume ID      : "
+                                                        + resume.getId());
+
                         System.out.println(
                                         "Candidate Name : "
                                                         + resume.getCandidateName());
+
                         System.out.println(
                                         "Email          : "
                                                         + resume.getEmail());
+
                         System.out.println(
                                         "File Name      : "
                                                         + resume.getFileName());
+
                         System.out.println(
-                                        "Database Path  : "
+                                        "File Path      : "
                                                         + resume.getFilePath());
+
                         System.out.println("-------------------------------------");
 
-                        // =====================================================
-                        // 13. Success response
-                        // =====================================================
+                        // -----------------------------------------------------
+                        // Success response
+                        // -----------------------------------------------------
 
                         return ResponseEntity.ok(
 
                                         "Resume uploaded successfully.\n\n"
-
                                                         + "✓ Resume Parsed\n"
                                                         + "✓ Candidate Name Extracted\n"
                                                         + "✓ Skills Extracted\n"
@@ -297,4 +280,5 @@ public class ResumeController {
                                                                         + e.getMessage());
                 }
         }
+
 }
