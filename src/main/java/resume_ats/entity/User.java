@@ -45,9 +45,6 @@ public class User {
 
     /*
      * NEVER return password in API JSON responses.
-     *
-     * This is especially important because this entity
-     * may be returned by other endpoints in the future.
      */
     @JsonIgnore
     @Column(nullable = false)
@@ -66,6 +63,19 @@ public class User {
 
     @Column(nullable = false)
     private boolean enabled = true;
+
+    // =====================================================
+    // EXCEL PERMISSION
+    // =====================================================
+
+    /*
+     * ADMIN can enable this permission for selected
+     * HR / RECRUITER users.
+     *
+     * Default = false.
+     */
+    @Column(name = "can_use_excel", nullable = false)
+    private boolean canUseExcel = false;
 
     // =====================================================
     // CREATED AT
@@ -113,6 +123,10 @@ public class User {
         return enabled;
     }
 
+    public boolean isCanUseExcel() {
+        return canUseExcel;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -147,6 +161,10 @@ public class User {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+
+    public void setCanUseExcel(boolean canUseExcel) {
+        this.canUseExcel = canUseExcel;
     }
 
     public void setCreatedAt(LocalDateTime createdAt) {

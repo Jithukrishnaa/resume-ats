@@ -1,4 +1,4 @@
-!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -94,9 +94,25 @@
         }
 
         .nav button:hover,
-        .nav button.active {
+        .nav button.active,
+        .nav-link:hover,
+        .nav-link.active {
             background: #eef2ff;
             color: #4f46e5;
+        }
+
+        .nav-link {
+            border: none;
+            background: transparent;
+            padding: 13px 14px;
+            border-radius: 10px;
+            text-align: left;
+            font-size: 14px;
+            color: #475569;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: block;
         }
 
         .nav-icon {
@@ -159,7 +175,7 @@
 
         .stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, minmax(0, 1fr));
             gap: 18px;
             margin-bottom: 22px;
         }
@@ -1735,6 +1751,103 @@
             }
         }
 
+
+
+        /* =====================================================
+           FINAL DASHBOARD / CANDIDATE CARD FIXES
+        ===================================================== */
+
+        .wallet-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-icon {
+            background: #eef2ff;
+            color: #4f46e5;
+        }
+
+        .wallet-subtext {
+            margin-top: 4px;
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .wallet-low {
+            border-color: #fbbf24 !important;
+            background: #fffbeb !important;
+        }
+
+        .candidate-avatar {
+            width: 54px;
+            height: 54px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+            border: 1px solid #ddd6fe;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(79,70,229,.08);
+        }
+
+        .candidate-avatar span {
+            font-size: 25px;
+            line-height: 1;
+        }
+
+        .candidate-role {
+            display: block;
+            margin-top: 5px;
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* The shortlist card now has: avatar | rank | candidate | score | match | action */
+        .candidate-main {
+            grid-template-columns: 54px 44px minmax(180px, 1fr) 125px 125px 135px !important;
+            gap: 14px !important;
+            padding: 18px 20px !important;
+        }
+
+        @media (max-width: 1100px) {
+            .candidate-main {
+                grid-template-columns: 54px 44px minmax(170px, 1fr) 120px 130px !important;
+            }
+
+            .result-actions-cell {
+                grid-column: 5;
+                grid-row: 1;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .candidate-main {
+                grid-template-columns: 54px 42px 1fr !important;
+            }
+
+            .candidate-score,
+            .match-wrap,
+            .result-actions-cell {
+                grid-column: 3;
+                text-align: left;
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 1100px) {
+            .stats {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .stats {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
 </style>
 </head>
 
@@ -1788,16 +1901,28 @@
                 <span class="nav-text">Candidates</span>
             </button>
 
-            <!-- PROFILE -->
-            <button onclick="openProfilePage()">
-                <span class="nav-icon">👤</span>
-                <span class="nav-text">Profile</span>
-            </button>
-
-            <button onclick="downloadReport()">
+            <button
+                id="adminReportsNav"
+                type="button"
+                onclick="downloadReport()"
+                style="display:none;">
                 <span class="nav-icon">📑</span>
                 <span class="nav-text">Reports</span>
             </button>
+
+            <button
+                id="adminUsersNav"
+                type="button"
+                onclick="window.location.href='/admin-users.html'"
+                style="display:none;">
+                <span class="nav-icon">👥</span>
+                <span class="nav-text">User Management</span>
+            </button>
+
+            <a href="/profile.html" class="nav-link">
+                <span class="nav-icon">👤</span>
+                <span class="nav-text">Profile</span>
+            </a>
 
         </nav>
 
@@ -1926,6 +2051,31 @@
 
                     <div class="stat-value" id="shortlisted">
                         --
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="stat-card wallet-card">
+
+                <div class="stat-icon wallet-icon">
+                    💳
+                </div>
+
+                <div>
+
+                    <div class="stat-title">
+                        Wallet Balance
+                    </div>
+
+                    <div class="stat-value" id="walletCredits">
+                        --
+                    </div>
+
+                    <div class="wallet-subtext">
+                        Credits available
                     </div>
 
                 </div>
@@ -2096,7 +2246,7 @@
              EXCEL CANDIDATE IMPORT
         ========================= -->
 
-        <section class="card excel-import-card" id="excelImportSection">
+        <section class="card excel-import-card" id="excelImportSection" style="display:none;">
 
             <div class="excel-import-header">
                 <div>
@@ -2109,7 +2259,15 @@
                 <div class="excel-import-icon">📊</div>
             </div>
 
-            <div class="excel-import-body">
+            <div
+                id="excelPermissionLocked"
+                style="display:none; padding:18px; border:1px solid #e2e8f0; border-radius:12px; background:#f8fafc; color:#64748b; margin-top:14px;">
+                <div style="font-size:28px; margin-bottom:8px;">🔒</div>
+                <strong style="display:block; color:#334155; margin-bottom:5px;">Excel Import Disabled</strong>
+                <span style="font-size:12px; line-height:1.6;">Your account does not currently have permission to import candidates from Excel. Please ask an administrator to enable this feature.</span>
+            </div>
+
+            <div class="excel-import-body" id="excelImportBody">
                 <input
                     type="file"
                     id="candidateExcelFile"
@@ -2274,7 +2432,10 @@
              REPORT
         ========================= -->
 
-        <section class="card report">
+        <section
+            class="card report"
+            id="adminExportSection"
+            style="display:none;">
 
             <div>
 
@@ -2398,92 +2559,56 @@
 
     async function uploadSingle() {
 
-    const input =
-        document.getElementById("singleFile");
+        const input =
+            document.getElementById("singleFile");
 
-    if (!input || !input.files.length) {
-        notify("Please select a PDF resume.");
-        return;
-    }
+        if (!input.files.length) {
 
-    const file = input.files[0];
-
-    if (!file.name.toLowerCase().endsWith(".pdf")) {
-        notify("Please select a PDF resume.");
-        return;
-    }
-
-    const formData = new FormData();
-
-    // IMPORTANT:
-    // Backend expects @RequestParam("file")
-    formData.append("file", file);
-
-    try {
-
-        notify("Uploading resume...");
-
-        const response = await fetch(
-            "/api/resumes/upload",
-            {
-                method: "POST",
-                body: formData
-            }
-        );
-
-        const result =
-            await response.text();
-
-        console.log(
-            "Single Upload:",
-            response.status,
-            result
-        );
-
-        if (!response.ok) {
-
-            notify(
-                result ||
-                "Resume upload failed."
-            );
+            notify("Please select a PDF resume.");
 
             return;
         }
 
-        notify(result);
+        const formData =
+            new FormData();
 
-        // Update resume count
-        if (typeof loadResumeCount === "function") {
+        formData.append(
+            "file",
+            input.files[0]
+        );
+        
+
+        try {
+
+            notify("Uploading resume...");
+
+            const response =
+                await fetch(
+                    API.singleUpload,
+                    {
+                        method: "POST",
+                        body: formData
+                    }
+                );
+
+            const result =
+                await response.text();
+
+            notify(result);
+
             loadResumeCount();
+
+        } catch (error) {
+
+            console.error(error);
+
+            notify(
+                "Resume upload failed."
+            );
+
         }
 
-        // Refresh ATS results if available
-        if (typeof refreshATSResults === "function") {
-            refreshATSResults();
-        }
-
-        // Clear selected file
-        input.value = "";
-
-        const fileName =
-            document.getElementById("singleFileName");
-
-        if (fileName) {
-            fileName.innerText = "";
-        }
-
-    } catch (error) {
-
-        console.error(
-            "Single resume upload error:",
-            error
-        );
-
-        notify(
-            "Unable to connect to the server."
-        );
     }
-}
 
 
     /* ==========================================================
@@ -2495,27 +2620,18 @@
     const input =
         document.getElementById("bulkFile");
 
-    if (!input || !input.files.length) {
+    if (!input.files.length) {
 
-        notify(
-            "Please select a ZIP file."
-        );
+        notify("Please select a ZIP file.");
 
         return;
     }
 
-    const file =
-        input.files[0];
+    const file = input.files[0];
 
-    if (
-        !file.name
-            .toLowerCase()
-            .endsWith(".zip")
-    ) {
+    if (!file.name.toLowerCase().endsWith(".zip")) {
 
-        notify(
-            "Please select a ZIP file."
-        );
+        notify("Please select a ZIP file.");
 
         return;
     }
@@ -2523,7 +2639,6 @@
     const formData =
         new FormData();
 
-    // Backend should use @RequestParam("zipFile")
     formData.append(
         "zipFile",
         file
@@ -2531,13 +2646,11 @@
 
     try {
 
-        notify(
-            "Uploading resumes..."
-        );
+        notify("Uploading resumes...");
 
         const response =
             await fetch(
-                "/api/bulk/upload",
+                API.bulkUpload,
                 {
                     method: "POST",
                     body: formData
@@ -2547,62 +2660,27 @@
         const result =
             await response.text();
 
-        console.log(
-            "Bulk Upload:",
-            response.status,
-            result
-        );
-
         if (!response.ok) {
 
             notify(
-                result ||
                 "Bulk upload failed."
             );
+
+            console.error(result);
 
             return;
         }
 
         notify(result);
 
-        if (
-            typeof loadResumeCount ===
-            "function"
-        ) {
-
-            loadResumeCount();
-        }
-
-        if (
-            typeof refreshATSResults ===
-            "function"
-        ) {
-
-            refreshATSResults();
-        }
-
-        input.value = "";
-
-        const fileName =
-            document.getElementById(
-                "bulkFileName"
-            );
-
-        if (fileName) {
-
-            fileName.innerText =
-                "";
-        }
+        loadResumeCount();
 
     } catch (error) {
 
-        console.error(
-            "Bulk upload error:",
-            error
-        );
+        console.error(error);
 
         notify(
-            "Unable to connect to the server."
+            "Bulk upload failed."
         );
     }
 }
@@ -2814,7 +2892,7 @@
     function viewResume(id) {
 
         window.open(
-            "/api/resumes/" + id,
+            "/api/resume/" + id,
             "_blank"
         );
 
@@ -3081,11 +3159,15 @@ function filterCandidates() {
             card.innerHTML = `
                 <div class="candidate-main">
 
+                    <div class="candidate-avatar" aria-hidden="true">
+                        <span>👤</span>
+                    </div>
+
                     <div class="rank-number">#${rank}</div>
 
                     <div class="candidate-info">
                         <strong>${escapeHtml(name)}</strong>
-                        <span>✉ ${escapeHtml(email)}</span>
+                        <span class="candidate-role">Candidate Profile</span>
                     </div>
 
                     <div class="candidate-score">
@@ -3418,6 +3500,181 @@ function filterCandidates() {
 
 
     /* ==========================================================
+       LOAD USER ROLE / ADMIN UI
+    ========================================================== */
+
+    async function loadUserRole() {
+
+        const exportSection =
+            document.getElementById("adminExportSection");
+
+        const reportsNav =
+            document.getElementById("adminReportsNav");
+
+        const adminUsersNav =
+            document.getElementById("adminUsersNav");
+
+        const excelSection =
+            document.getElementById("excelImportSection");
+
+        const excelBody =
+            document.getElementById("excelImportBody");
+
+        const excelLocked =
+            document.getElementById("excelPermissionLocked");
+
+        function hideAdminElements() {
+
+            if (exportSection) {
+                exportSection.style.display = "none";
+            }
+
+            if (reportsNav) {
+                reportsNav.style.display = "none";
+            }
+
+            if (adminUsersNav) {
+                adminUsersNav.style.display = "none";
+            }
+        }
+
+        if (!exportSection && !reportsNav && !adminUsersNav && !excelSection) {
+            return;
+        }
+
+        try {
+
+            const response = await fetch(
+                "/api/auth/me",
+                {
+                    method: "GET",
+                    credentials: "include",
+                    headers: {
+                        "Accept": "application/json"
+                    }
+                }
+            );
+
+            if (!response.ok) {
+                hideAdminElements();
+                return;
+            }
+
+            const user = await response.json();
+
+            const role =
+                String(user.role || "")
+                    .trim()
+                    .toUpperCase();
+
+            const isAdmin =
+                user.authenticated === true &&
+                role === "ADMIN";
+
+            const canUseExcel =
+                isAdmin || user.canUseExcel === true;
+
+            if (exportSection) {
+                exportSection.style.display =
+                    isAdmin ? "flex" : "none";
+            }
+
+            if (reportsNav) {
+                reportsNav.style.display =
+                    isAdmin ? "block" : "none";
+            }
+
+            if (adminUsersNav) {
+                adminUsersNav.style.display =
+                    isAdmin ? "block" : "none";
+            }
+
+            if (excelSection) {
+                excelSection.style.display = "block";
+            }
+
+            if (excelBody) {
+                excelBody.style.display = canUseExcel ? "block" : "none";
+            }
+
+            if (excelLocked) {
+                excelLocked.style.display = canUseExcel ? "none" : "block";
+            }
+
+        } catch (error) {
+
+            console.error(
+                "Error loading user role:",
+                error
+            );
+
+            hideAdminElements();
+
+            if (excelSection) {
+                excelSection.style.display = "block";
+            }
+
+            if (excelBody) {
+                excelBody.style.display = "none";
+            }
+
+            if (excelLocked) {
+                excelLocked.style.display = "block";
+            }
+        }
+    }
+
+
+    /* ==========================================================
+       WALLET BALANCE
+    ========================================================== */
+
+    async function loadWalletBalance() {
+
+        const walletCredits =
+            document.getElementById("walletCredits");
+
+        if (!walletCredits) return;
+
+        try {
+
+            const response = await fetch(
+                "/api/wallet",
+                {
+                    method: "GET",
+                    credentials: "include"
+                }
+            );
+
+            if (response.status === 401) {
+                walletCredits.innerText = "--";
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error("Unable to load wallet.");
+            }
+
+            const wallet = await response.json();
+            const credits = Number(wallet.credits || 0);
+
+            walletCredits.innerText = credits.toLocaleString();
+
+            const walletCard =
+                document.querySelector(".wallet-card");
+
+            if (walletCard) {
+                walletCard.classList.toggle("wallet-low", credits < 50);
+            }
+
+        } catch (error) {
+            console.error("Wallet balance error:", error);
+            walletCredits.innerText = "--";
+        }
+    }
+
+
+    /* ==========================================================
        INITIAL LOAD
     ========================================================== */
 
@@ -3426,18 +3683,14 @@ function filterCandidates() {
         function () {
 
             loadResumeCount();
+            loadWalletBalance();
+            loadUserRole();
 
         }
     );
 
 </script>
 
-
-<script>
-function openProfilePage() {
-    window.location.href = "/profile.html";
-}
-</script>
 
 </body>
 

@@ -2,12 +2,8 @@
 <html lang="en">
 
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Create Account | AI ATS Resume Checker</title>
 
@@ -15,10 +11,11 @@
 
         * {
             box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
         body {
-            margin: 0;
             min-height: 100vh;
 
             display: flex;
@@ -33,17 +30,18 @@
             background:
                 linear-gradient(
                     135deg,
-                    #f5f7fb 0%,
-                    #eef2ff 100%
+                    #eef2ff,
+                    #f8fafc
                 );
 
             color: #172033;
+
+            padding: 25px;
         }
 
-        .wrapper {
+        .register-wrapper {
             width: 100%;
             max-width: 480px;
-            padding: 20px;
         }
 
         /* =====================================================
@@ -56,16 +54,16 @@
         }
 
         .brand-icon {
-            width: 55px;
-            height: 55px;
+            width: 50px;
+            height: 50px;
 
-            margin: 0 auto 10px;
+            margin: 0 auto 12px;
+
+            border-radius: 14px;
 
             display: flex;
             align-items: center;
             justify-content: center;
-
-            border-radius: 16px;
 
             background:
                 linear-gradient(
@@ -76,7 +74,7 @@
 
             color: white;
 
-            font-size: 25px;
+            font-size: 23px;
 
             box-shadow:
                 0 10px 25px
@@ -84,54 +82,53 @@
         }
 
         .brand h1 {
-            margin: 0;
+            font-size: 24px;
+            font-weight: 800;
 
-            color: #1d4ed8;
-
-            font-size: 21px;
+            color: #172033;
         }
 
         .brand p {
-            margin: 5px 0 0;
+            margin-top: 5px;
 
             color: #64748b;
 
-            font-size: 11px;
+            font-size: 12px;
         }
 
         /* =====================================================
            CARD
         ===================================================== */
 
-        .card {
+        .register-card {
             background: white;
+
+            border:
+                1px solid
+                #e5e7eb;
+
+            border-radius: 18px;
 
             padding: 30px;
 
-            border-radius: 20px;
-
-            border:
-                1px solid #e5e7eb;
-
             box-shadow:
-                0 20px 50px
-                rgba(15, 23, 42, .10);
+                0 18px 50px
+                rgba(15, 23, 42, .08);
         }
 
-        .card h2 {
-            margin: 0;
+        .register-card h2 {
+            font-size: 22px;
+            font-weight: 800;
 
-            font-size: 21px;
+            margin-bottom: 5px;
         }
 
         .subtitle {
-            margin: 6px 0 22px;
-
             color: #64748b;
 
             font-size: 12px;
 
-            line-height: 1.5;
+            margin-bottom: 25px;
         }
 
         /* =====================================================
@@ -141,37 +138,35 @@
         .message {
             display: none;
 
-            padding: 11px 12px;
+            padding: 12px 14px;
 
-            margin-bottom: 15px;
+            margin-bottom: 18px;
 
             border-radius: 9px;
 
-            font-size: 11px;
+            font-size: 12px;
 
-            line-height: 1.4;
+            line-height: 1.5;
         }
 
         .message.error {
             display: block;
 
-            color: #dc2626;
-
             background: #fef2f2;
 
-            border:
-                1px solid #fecaca;
+            color: #b91c1c;
+
+            border: 1px solid #fecaca;
         }
 
         .message.success {
             display: block;
 
+            background: #f0fdf4;
+
             color: #15803d;
 
-            background: #ecfdf5;
-
-            border:
-                1px solid #bbf7d0;
+            border: 1px solid #bbf7d0;
         }
 
         /* =====================================================
@@ -179,43 +174,48 @@
         ===================================================== */
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 17px;
         }
 
-        label {
+        .form-group label {
             display: block;
 
-            margin-bottom: 6px;
-
-            color: #334155;
+            margin-bottom: 7px;
 
             font-size: 11px;
 
             font-weight: 700;
+
+            color: #475569;
         }
 
-        input {
+        .form-group input,
+        .form-group select {
             width: 100%;
 
-            padding: 11px 12px;
+            padding: 12px 13px;
 
             border:
-                1px solid #dbe1ea;
+                1px solid
+                #dbe1ea;
 
             border-radius: 9px;
 
             outline: none;
 
-            color: #172033;
+            font-size: 13px;
 
             background: white;
 
-            font-size: 12px;
+            color: #172033;
 
-            transition: .2s ease;
+            transition:
+                border-color .2s ease,
+                box-shadow .2s ease;
         }
 
-        input:focus {
+        .form-group input:focus,
+        .form-group select:focus {
             border-color: #6366f1;
 
             box-shadow:
@@ -232,7 +232,7 @@
         }
 
         .password-container input {
-            padding-right: 43px;
+            padding-right: 45px;
         }
 
         .show-password {
@@ -241,8 +241,7 @@
             right: 10px;
             top: 50%;
 
-            transform:
-                translateY(-50%);
+            transform: translateY(-50%);
 
             border: none;
 
@@ -250,57 +249,35 @@
 
             cursor: pointer;
 
+            font-size: 16px;
+
             color: #64748b;
+        }
 
-            font-size: 15px;
-
-            padding: 3px;
+        .show-password:hover {
+            color: #2563eb;
         }
 
         /* =====================================================
-           PASSWORD STRENGTH
+           ROLE
         ===================================================== */
 
-        .strength-container {
+        .role-info {
             margin-top: 7px;
-        }
 
-        .strength-bar {
-            height: 4px;
-
-            width: 100%;
-
-            background: #e5e7eb;
-
-            border-radius: 10px;
-
-            overflow: hidden;
-        }
-
-        .strength-fill {
-            height: 100%;
-
-            width: 0%;
-
-            transition: .25s ease;
-        }
-
-        .strength-text {
-            margin-top: 4px;
+            font-size: 10px;
 
             color: #94a3b8;
 
-            font-size: 9px;
+            line-height: 1.5;
         }
 
         /* =====================================================
-           REGISTER BUTTON
+           BUTTON
         ===================================================== */
 
         .register-btn {
             width: 100%;
-
-            margin-top: 7px;
 
             padding: 13px;
 
@@ -317,26 +294,32 @@
 
             color: white;
 
-            cursor: pointer;
-
-            font-size: 12px;
+            font-size: 13px;
 
             font-weight: 800;
+
+            cursor: pointer;
+
+            transition:
+                transform .2s ease,
+                box-shadow .2s ease,
+                opacity .2s ease;
 
             box-shadow:
                 0 8px 18px
                 rgba(37, 99, 235, .18);
-
-            transition: .2s ease;
         }
 
         .register-btn:hover {
-            transform:
-                translateY(-1px);
+            transform: translateY(-1px);
+
+            box-shadow:
+                0 10px 22px
+                rgba(37, 99, 235, .24);
         }
 
         .register-btn:disabled {
-            opacity: .6;
+            opacity: .65;
 
             cursor: not-allowed;
 
@@ -348,18 +331,19 @@
         ===================================================== */
 
         .login-link {
-            margin-top: 18px;
+            margin-top: 20px;
 
             padding-top: 17px;
 
             border-top:
-                1px solid #eef0f4;
+                1px solid
+                #eef0f4;
 
             text-align: center;
 
             color: #64748b;
 
-            font-size: 11px;
+            font-size: 12px;
         }
 
         .login-link a {
@@ -374,24 +358,36 @@
             text-decoration: underline;
         }
 
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
         .footer {
-            margin-top: 15px;
+            margin-top: 18px;
 
             text-align: center;
 
             color: #94a3b8;
 
-            font-size: 9px;
+            font-size: 10px;
         }
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
 
         @media (max-width: 500px) {
 
-            .wrapper {
+            body {
                 padding: 15px;
             }
 
-            .card {
+            .register-card {
                 padding: 23px 20px;
+            }
+
+            .brand h1 {
+                font-size: 20px;
             }
         }
 
@@ -401,11 +397,11 @@
 
 <body>
 
-<div class="wrapper">
+<div class="register-wrapper">
 
     <!-- =====================================================
          BRAND
-    ====================================================== -->
+    ===================================================== -->
 
     <div class="brand">
 
@@ -425,21 +421,23 @@
 
 
     <!-- =====================================================
-         REGISTRATION CARD
-    ====================================================== -->
+         REGISTER CARD
+    ===================================================== -->
 
-    <div class="card">
+    <div class="register-card">
 
         <h2>
             Create your account
         </h2>
 
         <p class="subtitle">
-            Register as an HR recruiter to access the ATS dashboard.
+            Create an account to access the recruitment dashboard.
         </p>
 
 
-        <!-- MESSAGE -->
+        <!-- =================================================
+             MESSAGE
+        ================================================== -->
 
         <div
             id="message"
@@ -447,7 +445,14 @@
         </div>
 
 
-        <form id="registerForm">
+        <!-- =================================================
+             FORM
+        ================================================== -->
+
+        <form
+            id="registerForm"
+            autocomplete="off">
+
 
             <!-- FULL NAME -->
 
@@ -461,7 +466,6 @@
                     id="fullName"
                     type="text"
                     placeholder="Enter your full name"
-                    autocomplete="name"
                     required>
 
             </div>
@@ -490,13 +494,13 @@
             <div class="form-group">
 
                 <label for="email">
-                    Email Address
+                    Email
                 </label>
 
                 <input
                     id="email"
                     type="email"
-                    placeholder="Enter your email address"
+                    placeholder="Enter your email"
                     autocomplete="email"
                     required>
 
@@ -516,42 +520,20 @@
                     <input
                         id="password"
                         type="password"
-                        placeholder="Minimum 8 characters"
+                        placeholder="Create a password"
                         autocomplete="new-password"
+                        minlength="6"
                         required>
 
                     <button
                         type="button"
                         class="show-password"
-                        onclick="togglePassword('password', this)">
+                        onclick="togglePassword('password', this)"
+                        aria-label="Show password">
 
                         👁
 
                     </button>
-
-                </div>
-
-
-                <!-- PASSWORD STRENGTH -->
-
-                <div class="strength-container">
-
-                    <div class="strength-bar">
-
-                        <div
-                            id="strengthFill"
-                            class="strength-fill">
-                        </div>
-
-                    </div>
-
-                    <div
-                        id="strengthText"
-                        class="strength-text">
-
-                        Password strength
-
-                    </div>
 
                 </div>
 
@@ -571,14 +553,16 @@
                     <input
                         id="confirmPassword"
                         type="password"
-                        placeholder="Re-enter your password"
+                        placeholder="Repeat your password"
                         autocomplete="new-password"
+                        minlength="6"
                         required>
 
                     <button
                         type="button"
                         class="show-password"
-                        onclick="togglePassword('confirmPassword', this)">
+                        onclick="togglePassword('confirmPassword', this)"
+                        aria-label="Show password">
 
                         👁
 
@@ -589,12 +573,41 @@
             </div>
 
 
-            <!-- BUTTON -->
+            <!-- ROLE -->
+
+            <div class="form-group">
+
+                <label for="role">
+                    Account Type
+                </label>
+
+                <select
+                    id="role"
+                    required>
+
+                    <option value="HR">
+                        HR
+                    </option>
+
+                    <option value="RECRUITER">
+                        Recruiter
+                    </option>
+
+                </select>
+
+                <div class="role-info">
+                    Administrator accounts are managed separately for security.
+                </div>
+
+            </div>
+
+
+            <!-- SUBMIT -->
 
             <button
                 type="submit"
-                id="registerButton"
-                class="register-btn">
+                class="register-btn"
+                id="registerButton">
 
                 CREATE ACCOUNT
 
@@ -603,7 +616,9 @@
         </form>
 
 
-        <!-- LOGIN -->
+        <!-- =================================================
+             LOGIN
+        ================================================== -->
 
         <div class="login-link">
 
@@ -629,265 +644,182 @@
 
 <script>
 
-    // =========================================================
-    // ELEMENTS
-    // =========================================================
-
-    const form =
-        document.getElementById(
-            "registerForm"
-        );
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-    const password =
-        document.getElementById(
-            "password"
-        );
-
-    const confirmPassword =
-        document.getElementById(
-            "confirmPassword"
-        );
-
-    const strengthFill =
-        document.getElementById(
-            "strengthFill"
-        );
-
-    const strengthText =
-        document.getElementById(
-            "strengthText"
-        );
-
-
-    // =========================================================
-    // PASSWORD VISIBILITY
-    // =========================================================
+    // =====================================================
+    // SHOW / HIDE PASSWORD
+    // =====================================================
 
     function togglePassword(
-        fieldId,
+        inputId,
         button
     ) {
 
-        const field =
-            document.getElementById(
-                fieldId
-            );
+        const input =
+            document.getElementById(inputId);
 
-        if (field.type === "password") {
+        if (!input) {
+            return;
+        }
 
-            field.type = "text";
+        if (input.type === "password") {
+
+            input.type = "text";
 
             button.textContent = "🙈";
 
         } else {
 
-            field.type = "password";
+            input.type = "password";
 
             button.textContent = "👁";
         }
     }
 
 
-    // =========================================================
-    // PASSWORD STRENGTH
-    // =========================================================
-
-    password.addEventListener(
-        "input",
-        function () {
-
-            const value =
-                password.value;
-
-            let score = 0;
-
-            if (value.length >= 8) {
-                score++;
-            }
-
-            if (/[A-Z]/.test(value)) {
-                score++;
-            }
-
-            if (/[a-z]/.test(value)) {
-                score++;
-            }
-
-            if (/[0-9]/.test(value)) {
-                score++;
-            }
-
-            if (/[^A-Za-z0-9]/.test(value)) {
-                score++;
-            }
-
-
-            if (score === 0) {
-
-                strengthFill.style.width =
-                    "0%";
-
-                strengthText.textContent =
-                    "Password strength";
-
-            } else if (score <= 2) {
-
-                strengthFill.style.width =
-                    "35%";
-
-                strengthText.textContent =
-                    "Weak password";
-
-                strengthText.style.color =
-                    "#dc2626";
-
-            } else if (score <= 3) {
-
-                strengthFill.style.width =
-                    "65%";
-
-                strengthText.textContent =
-                    "Medium password";
-
-                strengthText.style.color =
-                    "#d97706";
-
-            } else {
-
-                strengthFill.style.width =
-                    "100%";
-
-                strengthText.textContent =
-                    "Strong password";
-
-                strengthText.style.color =
-                    "#16a34a";
-            }
-        }
-    );
-
-
-    // =========================================================
-    // DISPLAY MESSAGE
-    // =========================================================
+    // =====================================================
+    // SHOW MESSAGE
+    // =====================================================
 
     function showMessage(
         text,
         type
     ) {
 
-        message.style.display =
-            "block";
+        const message =
+            document.getElementById("message");
+
+        message.textContent = text;
 
         message.className =
             "message " + type;
-
-        message.textContent =
-            text;
     }
 
 
-    // =========================================================
+    // =====================================================
     // REGISTER
-    // =========================================================
+    // =====================================================
 
-    form.addEventListener(
-        "submit",
-        async function (event) {
+    document
+        .getElementById("registerForm")
+        .addEventListener(
+            "submit",
+            async function (event) {
 
-            event.preventDefault();
-
-
-            const fullName =
-                document.getElementById(
-                    "fullName"
-                ).value.trim();
+                event.preventDefault();
 
 
-            const username =
-                document.getElementById(
-                    "username"
-                ).value.trim();
+                const button =
+                    document.getElementById(
+                        "registerButton"
+                    );
 
 
-            const email =
-                document.getElementById(
-                    "email"
-                ).value.trim();
+                const fullName =
+                    document.getElementById(
+                        "fullName"
+                    ).value.trim();
 
 
-            const passwordValue =
-                password.value;
+                const username =
+                    document.getElementById(
+                        "username"
+                    ).value.trim();
 
 
-            const confirmValue =
-                confirmPassword.value;
+                const email =
+                    document.getElementById(
+                        "email"
+                    ).value.trim();
 
 
-            // -----------------------------------------------
-            // Password validation
-            // -----------------------------------------------
-
-            if (passwordValue.length < 8) {
-
-                showMessage(
-                    "Password must contain at least 8 characters.",
-                    "error"
-                );
-
-                return;
-            }
+                const password =
+                    document.getElementById(
+                        "password"
+                    ).value;
 
 
-            if (
-                passwordValue !==
-                confirmValue
-            ) {
-
-                showMessage(
-                    "Passwords do not match.",
-                    "error"
-                );
-
-                return;
-            }
+                const confirmPassword =
+                    document.getElementById(
+                        "confirmPassword"
+                    ).value;
 
 
-            // -----------------------------------------------
-            // Disable button
-            // -----------------------------------------------
-
-            const button =
-                document.getElementById(
-                    "registerButton"
-                );
-
-            button.disabled = true;
-
-            button.textContent =
-                "CREATING ACCOUNT...";
+                const role =
+                    document.getElementById(
+                        "role"
+                    ).value;
 
 
-            try {
+                // -------------------------------------------------
+                // VALIDATION
+                // -------------------------------------------------
 
-                const response =
-                    await fetch(
-                        "/api/auth/register",
-                        {
-                            method: "POST",
+                if (
+                    !fullName ||
+                    !username ||
+                    !email ||
+                    !password
+                ) {
 
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
+                    showMessage(
+                        "Please fill in all required fields.",
+                        "error"
+                    );
 
-                            body:
-                                JSON.stringify({
+                    return;
+                }
+
+
+                if (
+                    password !==
+                    confirmPassword
+                ) {
+
+                    showMessage(
+                        "Passwords do not match.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                if (password.length < 6) {
+
+                    showMessage(
+                        "Password must contain at least 6 characters.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+
+                // -------------------------------------------------
+                // LOADING
+                // -------------------------------------------------
+
+                button.disabled = true;
+
+                button.textContent =
+                    "CREATING ACCOUNT...";
+
+
+                try {
+
+                    const response =
+                        await fetch(
+                            "/api/auth/register",
+                            {
+                                method: "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                credentials: "include",
+
+                                body: JSON.stringify({
 
                                     fullName:
                                         fullName,
@@ -899,87 +831,101 @@
                                         email,
 
                                     password:
-                                        passwordValue
+                                        password,
+
+                                    role:
+                                        role
 
                                 })
-                        }
+                            }
+                        );
+
+
+                    const contentType =
+                        response.headers
+                            .get("content-type") || "";
+
+
+                    let result;
+
+
+                    if (
+                        contentType
+                            .includes("application/json")
+                    ) {
+
+                        result =
+                            await response.json();
+
+                    } else {
+
+                        result = {
+                            message:
+                                await response.text()
+                        };
+                    }
+
+
+                    if (!response.ok) {
+
+                        throw new Error(
+                            result.message ||
+                            result.error ||
+                            "Account creation failed."
+                        );
+                    }
+
+
+                    showMessage(
+                        result.message ||
+                        "Account created successfully. Redirecting to login...",
+                        "success"
                     );
 
 
-                const data =
-                    await response.json();
+                    document
+                        .getElementById(
+                            "registerForm"
+                        )
+                        .reset();
 
 
-                // -------------------------------------------
-                // Registration failed
-                // -------------------------------------------
+                    setTimeout(
+                        function () {
 
-                if (!response.ok) {
+                            window.location.href =
+                                "/login.html";
+
+                        },
+                        1200
+                    );
+
+
+                } catch (error) {
+
+                    console.error(
+                        "Registration error:",
+                        error
+                    );
+
 
                     showMessage(
-                        data.message ||
+                        error.message ||
                         "Unable to create account.",
                         "error"
                     );
 
-                    button.disabled =
-                        false;
+
+                } finally {
+
+                    button.disabled = false;
 
                     button.textContent =
                         "CREATE ACCOUNT";
-
-                    return;
                 }
 
-
-                // -------------------------------------------
-                // Success
-                // -------------------------------------------
-
-                showMessage(
-                    "Account created successfully. Redirecting to login...",
-                    "success"
-                );
-
-
-                form.reset();
-
-                strengthFill.style.width =
-                    "0%";
-
-                strengthText.textContent =
-                    "Password strength";
-
-
-                setTimeout(
-                    function () {
-
-                        window.location.href =
-                            "/login.html";
-
-                    },
-                    1800
-                );
-
-
-            } catch (error) {
-
-                console.error(error);
-
-                showMessage(
-                    "Unable to connect to the server. Please try again.",
-                    "error"
-                );
-
-                button.disabled =
-                    false;
-
-                button.textContent =
-                    "CREATE ACCOUNT";
             }
-
-        }
-    );
+        );
 
 </script>
 
