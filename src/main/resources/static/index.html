@@ -2053,6 +2053,22 @@ body{background:#f4f7fb;color:var(--getin-text)}
     font-weight: 800;
 }
 
+.jd-row-upload-btn {
+    min-width: 105px;
+}
+
+.jd-active-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 7px;
+    border-radius: 999px;
+    background: #eaf7ef;
+    color: #16804d;
+    font-size: 9px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
 .file-management-toolbar {
     display: flex;
     align-items: center;
@@ -2061,7 +2077,6 @@ body{background:#f4f7fb;color:var(--getin-text)}
     border-bottom: 1px solid #edf1f6;
     background: #fbfcfe;
 }
-
 .file-management-search {
     position: relative;
     flex: 1;
@@ -2220,6 +2235,16 @@ body{background:#f4f7fb;color:var(--getin-text)}
 .file-action-btn:hover {
     background: #eef5ff;
     border-color: #7eaae0;
+}
+
+.jd-delete-btn {
+    color: #b42318;
+    border-color: #efb4ae;
+}
+
+.jd-delete-btn:hover {
+    background: #fff1f0;
+    border-color: #d92d20;
 }
 
 .file-empty-state,
@@ -4610,6 +4635,10 @@ function filterCandidates() {
                                     💼 ${escapeHtml(title)}
                                 </span>
 
+                                ${jd.active ? `
+                                <span class="jd-active-badge">✓ Active JD</span>
+                                ` : ""}
+
                             </div>
 
                         </div>
@@ -4618,9 +4647,21 @@ function filterCandidates() {
                     <div class="uploaded-file-actions">
 
                         <button type="button"
+                                class="file-action-btn jd-row-upload-btn"
+                                onclick="activateJobDescription(${Number(jd.id)}, '${String(jd.title || jd.fileName || 'this JD').replace('\\','\\\\').replace("'", "\\'")}')">
+                            ✓ Use JD
+                        </button>
+
+                        <button type="button"
                                 class="file-action-btn"
                                 onclick="viewJobDescription(${Number(jd.id)})">
                             👁 View JD
+                        </button>
+
+                        <button type="button"
+                                class="file-action-btn jd-delete-btn"
+                                onclick="deleteJobDescription(${Number(jd.id)}, '${String(jd.title || jd.fileName || 'this JD').replace('\\','\\\\').replace("'", "\\'")}')">
+                            🗑 Delete
                         </button>
 
                     </div>
@@ -4628,6 +4669,150 @@ function filterCandidates() {
 
                 container.appendChild(card);
             });
+    }
+
+
+    /* ==========================================================
+       DELETE JOB DESCRIPTION FROM LIBRARY
+    ========================================================== */
+
+    async function deleteJobDescription(jdId, jdName) {
+
+        const confirmed = confirm(
+            `Delete this Job Description?\n\n${jdName || "Job Description"}\n\nThis will also remove its ATS results.`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+
+            notify("Deleting Job Description...");
+
+            const response = await fetch(
+                `/api/jobdescriptions/${jdId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+            const result = await response.text();
+
+            if (!response.ok) {
+                notify(result || "Failed to delete Job Description.");
+                return;
+            }
+
+            notify(result || "Job Description deleted successfully.");
+
+            await loadJobDescriptionCount();
+
+            const section = document.getElementById(
+                "allJobDescriptionsSection"
+            );
+
+            if (section && section.style.display !== "none") {
+                await showAllJobDescriptions();
+            }
+
+            // Load ATS results for the remaining/latest JD.
+            await viewResults();
+
+        } catch (error) {
+
+            console.error("JD delete error:", error);
+            notify("Failed to delete Job Description.");
+        }
+    }
+
+
+    /* ==========================================================
+       ACTIVATE EXISTING JOB DESCRIPTION
+    ========================================================== */
+
+    async function activateJobDescription(jdId, jdName) {
+
+        const confirmed = confirm(
+            `Use this Job Description as the active JD?\n\n${jdName || "Job Description"}\n\nATS will be re-run against all existing resumes.`
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        const buttons =
+            document.querySelectorAll(".jd-row-upload-btn");
+
+        buttons.forEach(button => {
+            button.disabled = true;
+        });
+
+        try {
+
+            notify("Activating Job Description and running ATS...");
+
+            const response = await fetch(
+                `/api/jobdescriptions/${jdId}/activate`,
+                {
+                    method: "PUT"
+                }
+            );
+
+            const resultText = await response.text();
+
+            let result = null;
+
+            try {
+                result = JSON.parse(resultText);
+            } catch (e) {
+                // Response may be plain text.
+            }
+
+            if (!response.ok) {
+                notify(
+                    result?.message ||
+                    resultText ||
+                    "Unable to activate Job Description."
+                );
+                return;
+            }
+
+            notify(
+                result?.message ||
+                "Job Description activated. ATS results updated."
+            );
+
+            await loadJobDescriptionCount();
+
+            const section =
+                document.getElementById(
+                    "allJobDescriptionsSection"
+                );
+
+            if (section && section.style.display !== "none") {
+                await showAllJobDescriptions();
+            }
+
+            await viewResults();
+
+        } catch (error) {
+
+            console.error(
+                "JD activation error:",
+                error
+            );
+
+            notify(
+                "Unable to activate Job Description."
+            );
+
+        } finally {
+
+            buttons.forEach(button => {
+                button.disabled = false;
+            });
+        }
     }
 
 

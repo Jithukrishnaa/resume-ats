@@ -13,7 +13,7 @@ import resume_ats.entity.Resume;
 import resume_ats.entity.User;
 import resume_ats.repository.ResumeRepository;
 import resume_ats.repository.UserRepository;
-import resume_ats.service.WalletService;
+import resume_ats.service.ResumeAccessService;
 
 import java.io.File;
 import java.util.Map;
@@ -22,398 +22,415 @@ import java.util.Map;
 @RequestMapping("/api/resume")
 public class ResumeFileController {
 
-        private static final String RESUME_DIR = System.getProperty("user.dir")
-                        + File.separator
-                        + "Uploads"
-                        + File.separator
-                        + "extracted";
+    // =========================================================
+    // RESUME DIRECTORY
+    // =========================================================
 
-        private static final long RESUME_VIEW_COST = 50L;
+    private static final String RESUME_DIR =
+            System.getProperty("user.dir")
+                    + File.separator
+                    + "Uploads"
+                    + File.separator
+                    + "extracted";
 
-        private final ResumeRepository resumeRepository;
-        private final UserRepository userRepository;
-        private final WalletService walletService;
+    private final ResumeRepository resumeRepository;
+    private final UserRepository userRepository;
+    private final ResumeAccessService resumeAccessService;
 
-        public ResumeFileController(
-                        ResumeRepository resumeRepository,
-                        UserRepository userRepository,
-                        WalletService walletService) {
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
 
-                this.resumeRepository = resumeRepository;
-                this.userRepository = userRepository;
-                this.walletService = walletService;
+    public ResumeFileController(
+            ResumeRepository resumeRepository,
+            UserRepository userRepository,
+            ResumeAccessService resumeAccessService) {
+
+        this.resumeRepository = resumeRepository;
+        this.userRepository = userRepository;
+        this.resumeAccessService = resumeAccessService;
+    }
+
+    // =========================================================
+    // VIEW RESUME
+    // =========================================================
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> viewResume(
+            @PathVariable Long id,
+            Authentication authentication) {
+
+        try {
+
+            // =====================================================
+            // 1. AUTHENTICATION CHECK
+            // =====================================================
+
+            if (authentication == null
+                    || !authentication.isAuthenticated()) {
+
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                                "message",
+                                "Please log in to view this resume."
+                        ));
+            }
+
+            // =====================================================
+            // 2. FIND CURRENT USER
+            // =====================================================
+
+            User currentUser = userRepository
+                    .findByUsernameIgnoreCase(
+                            authentication.getName())
+                    .orElse(null);
+
+            if (currentUser == null) {
+
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                                "message",
+                                "User account not found."
+                        ));
+            }
+
+            // =====================================================
+            // 3. FIND RESUME
+            // =====================================================
+
+            Resume resume = resumeRepository
+                    .findById(id)
+                    .orElse(null);
+
+            if (resume == null) {
+
+                System.out.println(
+                        "Resume not found in database : " + id);
+
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            }
+
+            // =====================================================
+            // 4. GET FILE NAME
+            // =====================================================
+
+            String fileName = resume.getFileName();
+
+            if (fileName == null
+                    || fileName.isBlank()) {
+
+                System.out.println(
+                        "Resume filename missing : " + id);
+
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            }
+
+            // =====================================================
+            // 5. PREVENT PATH TRAVERSAL
+            // =====================================================
+
+            fileName = new File(fileName).getName();
+
+            // =====================================================
+            // 6. CONSTRUCT FILE PATH
+            // =====================================================
+
+            File resumeFile = new File(
+                    RESUME_DIR,
+                    fileName);
+
+            System.out.println("----------------------------------");
+            System.out.println(
+                    "Resume ID     : " + id);
+            System.out.println(
+                    "Candidate     : "
+                            + resume.getCandidateName());
+            System.out.println(
+                    "User          : "
+                            + currentUser.getUsername());
+            System.out.println(
+                    "Role          : "
+                            + currentUser.getRole());
+            System.out.println(
+                    "File Name     : " + fileName);
+            System.out.println(
+                    "Resume Folder : " + RESUME_DIR);
+            System.out.println(
+                    "Absolute Path : "
+                            + resumeFile.getAbsolutePath());
+            System.out.println(
+                    "File Exists   : "
+                            + resumeFile.exists());
+            System.out.println("----------------------------------");
+
+            // =====================================================
+            // 7. CHECK FILE BEFORE CHARGING
+            // =====================================================
+
+            if (!resumeFile.exists()
+                    || !resumeFile.isFile()) {
+
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            }
+
+            // =====================================================
+            // 8. CHECK / UNLOCK ACCESS
+            //
+            // ADMIN:
+            //      FREE
+            //
+            // EXTERNAL USER:
+            //      First access = 50 credits
+            //      Existing access = FREE
+            // =====================================================
+
+            try {
+
+                resumeAccessService.ensureResumeAccess(
+                        currentUser,
+                        resume);
+
+            } catch (IllegalStateException e) {
+
+                System.out.println(
+                        "Resume access denied for user "
+                                + currentUser.getUsername()
+                                + " : "
+                                + e.getMessage());
+
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(Map.of(
+                                "message",
+                                e.getMessage(),
+                                "requiredCredits",
+                                resumeAccessService
+                                        .getResumeAccessCost()
+                        ));
+            }
+
+            // =====================================================
+            // 9. CREATE RESOURCE
+            // =====================================================
+
+            Resource resource =
+                    new FileSystemResource(resumeFile);
+
+            // =====================================================
+            // 10. DETERMINE CONTENT TYPE
+            // =====================================================
+
+            MediaType mediaType =
+                    MediaType.APPLICATION_OCTET_STREAM;
+
+            if (fileName
+                    .toLowerCase()
+                    .endsWith(".pdf")) {
+
+                mediaType =
+                        MediaType.APPLICATION_PDF;
+            }
+
+            // =====================================================
+            // 11. RETURN PDF IN BROWSER
+            // =====================================================
+
+            return ResponseEntity.ok()
+                    .contentType(mediaType)
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "inline; filename=\""
+                                    + fileName
+                                    + "\"")
+                    .body(resource);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "message",
+                            "Unable to open resume."
+                    ));
         }
+    }
 
-        // =========================================================
-        // VIEW RESUME
-        // =========================================================
+    // =========================================================
+    // DOWNLOAD RESUME
+    // =========================================================
 
-        @GetMapping("/{id}")
-        public ResponseEntity<?> viewResume(
-                        @PathVariable Long id,
-                        Authentication authentication) {
+    @GetMapping("/{id}/download")
+    public ResponseEntity<?> downloadResume(
+            @PathVariable Long id,
+            Authentication authentication) {
 
-                try {
+        try {
 
-                        // =====================================================
-                        // 1. Authentication check
-                        // =====================================================
+            // =====================================================
+            // 1. AUTHENTICATION CHECK
+            // =====================================================
 
-                        if (authentication == null
-                                        || !authentication.isAuthenticated()) {
+            if (authentication == null
+                    || !authentication.isAuthenticated()) {
 
-                                return ResponseEntity
-                                                .status(HttpStatus.UNAUTHORIZED)
-                                                .body(Map.of(
-                                                                "message",
-                                                                "Please log in to view this resume."));
-                        }
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                                "message",
+                                "Please log in to download this resume."
+                        ));
+            }
 
-                        // =====================================================
-                        // 2. Find current user
-                        // =====================================================
+            // =====================================================
+            // 2. FIND CURRENT USER
+            // =====================================================
 
-                        User currentUser = userRepository
-                                        .findByUsernameIgnoreCase(
-                                                        authentication.getName())
-                                        .orElse(null);
+            User currentUser = userRepository
+                    .findByUsernameIgnoreCase(
+                            authentication.getName())
+                    .orElse(null);
 
-                        if (currentUser == null) {
+            if (currentUser == null) {
 
-                                return ResponseEntity
-                                                .status(HttpStatus.UNAUTHORIZED)
-                                                .body(Map.of(
-                                                                "message",
-                                                                "User account not found."));
-                        }
+                return ResponseEntity
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .body(Map.of(
+                                "message",
+                                "User account not found."
+                        ));
+            }
 
-                        // =====================================================
-                        // 3. Find resume
-                        // =====================================================
+            // =====================================================
+            // 3. FIND RESUME
+            // =====================================================
 
-                        Resume resume = resumeRepository
-                                        .findById(id)
-                                        .orElse(null);
+            Resume resume = resumeRepository
+                    .findById(id)
+                    .orElse(null);
 
-                        if (resume == null) {
+            if (resume == null) {
 
-                                System.out.println(
-                                                "Resume not found in database : " + id);
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            }
 
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
-                        }
+            // =====================================================
+            // 4. GET FILE NAME
+            // =====================================================
 
-                        // =====================================================
-                        // 4. Get filename
-                        // =====================================================
+            String fileName = resume.getFileName();
 
-                        String fileName = resume.getFileName();
+            if (fileName == null
+                    || fileName.isBlank()) {
 
-                        if (fileName == null || fileName.isBlank()) {
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            }
 
-                                System.out.println(
-                                                "Resume filename missing : " + id);
+            // =====================================================
+            // 5. PREVENT PATH TRAVERSAL
+            // =====================================================
 
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
-                        }
+            fileName = new File(fileName).getName();
 
-                        // =====================================================
-                        // 5. Prevent path traversal
-                        // =====================================================
+            // =====================================================
+            // 6. BUILD FILE PATH
+            // =====================================================
 
-                        fileName = new File(fileName)
-                                        .getName();
+            File resumeFile = new File(
+                    RESUME_DIR,
+                    fileName);
 
-                        // =====================================================
-                        // 6. Construct actual resume path
-                        // =====================================================
+            // =====================================================
+            // 7. CHECK FILE BEFORE CHARGING
+            // =====================================================
 
-                        File resumeFile = new File(
-                                        RESUME_DIR,
-                                        fileName);
+            if (!resumeFile.exists()
+                    || !resumeFile.isFile()) {
 
-                        System.out.println("----------------------------------");
-                        System.out.println(
-                                        "Resume ID     : " + id);
-                        System.out.println(
-                                        "Candidate     : "
-                                                        + resume.getCandidateName());
-                        System.out.println(
-                                        "User          : "
-                                                        + currentUser.getUsername());
-                        System.out.println(
-                                        "Role          : "
-                                                        + currentUser.getRole());
-                        System.out.println(
-                                        "File Name     : " + fileName);
-                        System.out.println(
-                                        "Resume Folder : " + RESUME_DIR);
-                        System.out.println(
-                                        "Absolute Path : "
-                                                        + resumeFile.getAbsolutePath());
-                        System.out.println(
-                                        "File Exists   : "
-                                                        + resumeFile.exists());
-                        System.out.println("----------------------------------");
+                return ResponseEntity
+                        .notFound()
+                        .build();
+            }
 
-                        // =====================================================
-                        // 7. Check physical file BEFORE charging
-                        // =====================================================
+            // =====================================================
+            // 8. CHECK / UNLOCK ACCESS
+            //
+            // ADMIN:
+            //      FREE
+            //
+            // EXTERNAL USER:
+            //      First access = 50 credits
+            //      Existing access = FREE
+            // =====================================================
 
-                        if (!resumeFile.exists()
-                                        || !resumeFile.isFile()) {
+            try {
 
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
-                        }
+                resumeAccessService.ensureResumeAccess(
+                        currentUser,
+                        resume);
 
-                        // =====================================================
-                        // 8. ADMIN = FREE
-                        // =====================================================
+            } catch (IllegalStateException e) {
 
-                        boolean isAdmin = "ADMIN".equalsIgnoreCase(
-                                        currentUser.getRole());
+                System.out.println(
+                        "Resume download denied for user "
+                                + currentUser.getUsername()
+                                + " : "
+                                + e.getMessage());
 
-                        // =====================================================
-                        // 9. NORMAL USER = 50 CREDITS
-                        // =====================================================
+                return ResponseEntity
+                        .status(HttpStatus.FORBIDDEN)
+                        .body(Map.of(
+                                "message",
+                                e.getMessage(),
+                                "requiredCredits",
+                                resumeAccessService
+                                        .getResumeAccessCost()
+                        ));
+            }
 
-                        if (!isAdmin) {
+            // =====================================================
+            // 9. CREATE RESOURCE
+            // =====================================================
 
-                                try {
+            Resource resource =
+                    new FileSystemResource(resumeFile);
 
-                                        walletService.deductCredits(
-                                                        currentUser,
-                                                        RESUME_VIEW_COST);
+            // =====================================================
+            // 10. FORCE DOWNLOAD
+            // =====================================================
 
-                                } catch (IllegalStateException e) {
+            return ResponseEntity.ok()
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .header(
+                            HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\""
+                                    + fileName
+                                    + "\"")
+                    .body(resource);
 
-                                        System.out.println(
-                                                        "Resume access denied for user "
-                                                                        + currentUser.getUsername()
-                                                                        + " : "
-                                                                        + e.getMessage());
+        } catch (Exception e) {
 
-                                        return ResponseEntity
-                                                        .status(HttpStatus.FORBIDDEN)
-                                                        .body(Map.of(
-                                                                        "message",
-                                                                        e.getMessage(),
-                                                                        "requiredCredits",
-                                                                        RESUME_VIEW_COST));
-                                }
-                        }
+            e.printStackTrace();
 
-                        // =====================================================
-                        // 10. Create resource
-                        // =====================================================
-
-                        Resource resource = new FileSystemResource(resumeFile);
-
-                        // =====================================================
-                        // 11. Determine content type
-                        // =====================================================
-
-                        MediaType mediaType = MediaType.APPLICATION_OCTET_STREAM;
-
-                        if (fileName
-                                        .toLowerCase()
-                                        .endsWith(".pdf")) {
-
-                                mediaType = MediaType.APPLICATION_PDF;
-                        }
-
-                        // =====================================================
-                        // 12. Return PDF in browser
-                        // =====================================================
-
-                        return ResponseEntity.ok()
-                                        .contentType(mediaType)
-                                        .header(
-                                                        HttpHeaders.CONTENT_DISPOSITION,
-                                                        "inline; filename=\""
-                                                                        + fileName
-                                                                        + "\"")
-                                        .body(resource);
-
-                } catch (Exception e) {
-
-                        e.printStackTrace();
-
-                        return ResponseEntity
-                                        .status(
-                                                        HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .body(Map.of(
-                                                        "message",
-                                                        "Unable to open resume."));
-                }
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of(
+                            "message",
+                            "Unable to download resume."
+                    ));
         }
-
-        // =========================================================
-        // DOWNLOAD RESUME
-        // =========================================================
-
-        @GetMapping("/{id}/download")
-        public ResponseEntity<?> downloadResume(
-                        @PathVariable Long id,
-                        Authentication authentication) {
-
-                try {
-
-                        // =====================================================
-                        // 1. Authentication
-                        // =====================================================
-
-                        if (authentication == null
-                                        || !authentication.isAuthenticated()) {
-
-                                return ResponseEntity
-                                                .status(HttpStatus.UNAUTHORIZED)
-                                                .body(Map.of(
-                                                                "message",
-                                                                "Please log in to download this resume."));
-                        }
-
-                        // =====================================================
-                        // 2. Find current user
-                        // =====================================================
-
-                        User currentUser = userRepository
-                                        .findByUsernameIgnoreCase(
-                                                        authentication.getName())
-                                        .orElse(null);
-
-                        if (currentUser == null) {
-
-                                return ResponseEntity
-                                                .status(HttpStatus.UNAUTHORIZED)
-                                                .body(Map.of(
-                                                                "message",
-                                                                "User account not found."));
-                        }
-
-                        // =====================================================
-                        // 3. Find resume
-                        // =====================================================
-
-                        Resume resume = resumeRepository
-                                        .findById(id)
-                                        .orElse(null);
-
-                        if (resume == null) {
-
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
-                        }
-
-                        // =====================================================
-                        // 4. Get filename
-                        // =====================================================
-
-                        String fileName = resume.getFileName();
-
-                        if (fileName == null
-                                        || fileName.isBlank()) {
-
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
-                        }
-
-                        // =====================================================
-                        // 5. Prevent path traversal
-                        // =====================================================
-
-                        fileName = new File(fileName)
-                                        .getName();
-
-                        // =====================================================
-                        // 6. Build file path
-                        // =====================================================
-
-                        File resumeFile = new File(
-                                        RESUME_DIR,
-                                        fileName);
-
-                        // =====================================================
-                        // 7. Check file BEFORE charging
-                        // =====================================================
-
-                        if (!resumeFile.exists()
-                                        || !resumeFile.isFile()) {
-
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
-                        }
-
-                        // =====================================================
-                        // 8. ADMIN = FREE
-                        // =====================================================
-
-                        boolean isAdmin = "ADMIN".equalsIgnoreCase(
-                                        currentUser.getRole());
-
-                        // =====================================================
-                        // 9. NORMAL USER = 50 CREDITS
-                        // =====================================================
-
-                        if (!isAdmin) {
-
-                                try {
-
-                                        walletService.deductCredits(
-                                                        currentUser,
-                                                        RESUME_VIEW_COST);
-
-                                } catch (IllegalStateException e) {
-
-                                        return ResponseEntity
-                                                        .status(HttpStatus.FORBIDDEN)
-                                                        .body(Map.of(
-                                                                        "message",
-                                                                        e.getMessage(),
-                                                                        "requiredCredits",
-                                                                        RESUME_VIEW_COST));
-                                }
-                        }
-
-                        // =====================================================
-                        // 10. Create resource
-                        // =====================================================
-
-                        Resource resource = new FileSystemResource(resumeFile);
-
-                        // =====================================================
-                        // 11. Force download
-                        // =====================================================
-
-                        return ResponseEntity.ok()
-                                        .contentType(
-                                                        MediaType.APPLICATION_PDF)
-                                        .header(
-                                                        HttpHeaders.CONTENT_DISPOSITION,
-                                                        "attachment; filename=\""
-                                                                        + fileName
-                                                                        + "\"")
-                                        .body(resource);
-
-                } catch (Exception e) {
-
-                        e.printStackTrace();
-
-                        return ResponseEntity
-                                        .status(
-                                                        HttpStatus.INTERNAL_SERVER_ERROR)
-                                        .body(Map.of(
-                                                        "message",
-                                                        "Unable to download resume."));
-                }
-        }
+    }
 }

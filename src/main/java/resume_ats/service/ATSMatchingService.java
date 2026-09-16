@@ -36,7 +36,7 @@ public class ATSMatchingService {
 
     public void runATS() {
 
-        JobDescription latestJD = jobDescriptionRepository.findTopByOrderByIdDesc();
+        JobDescription latestJD = jobDescriptionRepository.findTopByActiveTrueOrderByIdDesc();
 
         if (latestJD == null) {
             throw new RuntimeException("No Job Description uploaded.");

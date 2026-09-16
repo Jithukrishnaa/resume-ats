@@ -33,7 +33,7 @@ public class ATSService {
     public void runATSMatching() {
 
         // Get latest Job Description
-        JobDescription job = jobDescriptionRepository.findTopByOrderByIdDesc();
+        JobDescription job = jobDescriptionRepository.findTopByActiveTrueOrderByIdDesc();
 
         if (job == null) {
             throw new RuntimeException("No Job Description found.");

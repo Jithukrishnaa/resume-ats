@@ -281,4 +281,27 @@ public class ResumeController {
                 }
         }
 
+
+        // =========================================================
+        // GET ALL UPLOADED RESUMES
+        // =========================================================
+
+        @GetMapping
+        public ResponseEntity<?> getAllResumes() {
+
+                try {
+                        return ResponseEntity.ok(
+                                        resumeRepository.findAll()
+                        );
+
+                } catch (Exception e) {
+
+                        e.printStackTrace();
+
+                        return ResponseEntity
+                                        .internalServerError()
+                                        .body("Unable to load resumes.");
+                }
+        }
+
 }
