@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AI ATS Resume Checker</title>
+    <title>GetIn Recruit</title>
 
     <style>
 
@@ -61,7 +61,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 22px;
+            font-size: 16px;
         }
 
         .logo h2 {
@@ -157,6 +157,35 @@
             gap: 12px;
         }
 
+        .notification-icon {
+            font-size: 19px;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .header-wallet {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 7px 10px;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            background: #ffffff;
+            color: #172033;
+            font-size: 13px;
+            font-weight: 800;
+            box-shadow: 0 3px 10px rgba(15, 23, 42, .04);
+        }
+
+        .header-wallet-icon {
+            font-size: 15px;
+        }
+
+        .header-wallet-credits {
+            min-width: 18px;
+            text-align: right;
+        }
+
         .avatar {
             width: 40px;
             height: 40px;
@@ -183,7 +212,7 @@
         .stat-card {
             background: white;
             border: 1px solid #e5e7eb;
-            border-radius: 14px;
+            border-radius: 10px;
             padding: 20px;
             display: flex;
             align-items: center;
@@ -227,7 +256,7 @@
         }
 
         .stat-value {
-            font-size: 24px;
+            font-size: 18px;
             font-weight: 700;
             margin-top: 3px;
         }
@@ -286,8 +315,9 @@
             position: relative;
             background: #fff;
             border: 1px solid #e5e7eb;
-            border-radius: 20px;
-            padding: 24px;
+            border-radius: 14px;
+            padding: 14px 16px;
+            min-height: 0;
             overflow: hidden;
             box-shadow: 0 8px 25px rgba(15,23,42,.05);
             transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
@@ -316,13 +346,13 @@
             display: flex;
             align-items: flex-start;
             justify-content: space-between;
-            margin-bottom: 16px;
+            margin-bottom: 9px;
         }
 
         .upload-card-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 16px;
+            width: 40px;
+            height: 40px;
+            border-radius: 11px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -335,8 +365,8 @@
         .job .upload-card-icon { background:#f3e8ff; color:#7c3aed; }
 
         .upload-badge {
-            padding: 6px 9px;
-            border-radius: 8px;
+            padding: 4px 7px;
+            border-radius: 7px;
             font-size: 9px;
             font-weight: 800;
             letter-spacing: .6px;
@@ -347,29 +377,29 @@
         .job .upload-badge { background:#faf5ff; color:#7c3aed; }
 
         .upload-card h3 {
-            margin-bottom: 7px;
+            margin-bottom: 5px;
             color: #172033;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 800;
         }
 
         .upload-card .card-description {
-            min-height: 38px;
-            margin-bottom: 15px;
+            min-height: 30px;
+            margin-bottom: 8px;
             color: #64748b;
-            font-size: 12px;
-            line-height: 1.6;
+            font-size: 10px;
+            line-height: 1.4;
         }
 
         .upload-features {
             display: flex;
             flex-wrap: wrap;
-            gap: 6px;
-            margin-bottom: 16px;
+            gap: 5px;
+            margin-bottom: 8px;
         }
 
         .upload-features span {
-            padding: 5px 8px;
+            padding: 4px 6px;
             border: 1px solid #edf0f4;
             border-radius: 7px;
             background: #f8fafc;
@@ -379,8 +409,8 @@
         }
 
         .upload-card .drop-zone {
-            min-height: 150px;
-            padding: 22px 14px;
+            min-height: 72px;
+            padding: 10px 10px;
             border: 1.5px dashed #cbd5e1;
             border-radius: 14px;
             background: #fafbfc;
@@ -401,9 +431,9 @@
         .job .drop-zone:hover { border-color:#7c3aed; background:#faf5ff; }
 
         .upload-card .upload-icon {
-            width: 46px;
-            height: 46px;
-            margin: 0 auto 10px;
+            width: 32px;
+            height: 32px;
+            margin: 0 auto 5px;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -419,26 +449,26 @@
         .upload-card .drop-zone strong {
             display: block;
             color: #172033;
-            font-size: 12px;
+            font-size: 10px;
         }
 
         .upload-card .drop-zone small {
-            margin-top: 5px;
+            margin-top: 3px;
             color: #64748b;
-            font-size: 10px;
+            font-size: 9px;
         }
 
         .drop-hint {
             display: block;
-            margin-top: 8px;
+            margin-top: 4px;
             color: #94a3b8;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .upload-card .file-name {
-            min-height: 42px;
-            margin-top: 10px;
-            padding: 8px 10px;
+            min-height: 30px;
+            margin-top: 6px;
+            padding: 6px 8px;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -469,10 +499,10 @@
         }
 
         .upload-card .btn {
-            height: 45px;
-            margin-top: 10px;
+            height: 34px;
+            margin-top: 7px;
             border-radius: 9px;
-            font-size: 12px;
+            font-size: 10px;
             font-weight: 800;
         }
 
@@ -480,9 +510,9 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            margin-top: 9px;
+            margin-top: 6px;
             color: #94a3b8;
-            font-size: 9px;
+            font-size: 8px;
         }
 
         .upload-note span {
@@ -1257,10 +1287,14 @@
         }
 
         .candidate-details {
-            display: block !important;
+            display: none !important;
             border-top: 1px solid #edf0f4 !important;
             background: #ffffff !important;
             padding: 15px 20px 18px !important;
+        }
+
+        .candidate-details.open {
+            display: block !important;
         }
 
         .detail-grid {
@@ -1358,7 +1392,16 @@
         }
 
         .details-toggle {
-            display: none !important;
+            display: inline-flex !important;
+            align-items: center;
+            margin: 0 20px 14px;
+            padding: 7px 0;
+            border: none;
+            background: transparent;
+            color: #6366f1;
+            cursor: pointer;
+            font-size: 10px;
+            font-weight: 800;
         }
 
         /* Search / filters */
@@ -1848,6 +1891,399 @@
             }
         }
 
+
+/* GETIN RECRUIT CORPORATE THEME */
+:root {
+  --getin-navy:#08265c;
+  --getin-navy-dark:#061d49;
+  --getin-blue:#1468d5;
+  --getin-blue-light:#eef5ff;
+  --getin-border:#d9e2f0;
+  --getin-text:#10213f;
+  --getin-muted:#64748b;
+}
+body{background:#f4f7fb;color:var(--getin-text)}
+.sidebar{background:#fff;border-right:1px solid var(--getin-border)}
+.logo-icon{background:linear-gradient(135deg,var(--getin-navy),var(--getin-blue));border-radius:11px}
+.logo h2{color:var(--getin-navy);font-weight:800}
+.logo span{color:#64748b}
+.nav button{color:#334b70}
+.nav button:hover{background:#f0f5fc;color:var(--getin-navy)}
+.nav button.active{background:#eaf2ff;color:var(--getin-blue);border-left:3px solid var(--getin-blue)}
+.header h1{color:var(--getin-navy);font-weight:800}
+.header p{color:var(--getin-muted)}
+.notification-icon{color:var(--getin-navy)}
+.header-wallet{border-color:var(--getin-border);color:var(--getin-navy);background:#fff}
+.header-wallet:hover{border-color:#b9cbe4;background:#f8fbff}
+.avatar{background:var(--getin-navy)}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.stat-card{border-color:var(--getin-border);border-radius:16px;box-shadow:0 5px 18px rgba(8,38,92,.06);min-height:94px}
+.stat-card .stat-icon.blue{background:#e5efff;color:var(--getin-blue)}
+.stat-card .stat-icon.green{background:#eaf7f1;color:#16804d}
+.stat-card .stat-icon.purple{background:#edf2ff;color:var(--getin-blue)}
+.stat-title{color:#58708f}.stat-value{color:var(--getin-navy)}
+.upload-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+.upload-workspace-heading .eyebrow{color:var(--getin-blue)}
+.upload-workspace-heading h2{color:var(--getin-navy)}
+.upload-workspace-heading p{color:var(--getin-muted)}
+.upload-ready{background:#f0faf5;border-color:#b9e7ce;color:#18794e}
+.upload-card{border-color:var(--getin-border);border-radius:16px;box-shadow:0 6px 20px rgba(8,38,92,.06)}
+.upload-card::before{height:3px}
+.upload-card.bulk::before,.upload-card.single::before,.upload-card.job::before{background:var(--getin-blue)}
+.upload-card:hover{border-color:#b8cbe5;box-shadow:0 14px 32px rgba(8,38,92,.10)}
+.upload-card.bulk .upload-card-icon,.upload-card.single .upload-card-icon,.upload-card.job .upload-card-icon{background:#eaf2ff;color:var(--getin-blue)}
+.upload-badge{background:#eef5ff;color:var(--getin-navy);border:1px solid #d7e5f8}
+.upload-card h3{color:var(--getin-navy)}.card-description{color:var(--getin-muted)}
+.upload-features span{border-color:#e1e8f2;background:#f8fbff;color:#58708f}
+.upload-card .drop-zone{border-color:#cbd8e8;background:#f9fbfe}
+.upload-card .drop-zone:hover,.bulk .drop-zone:hover,.single .drop-zone:hover,.job .drop-zone:hover{border-color:#7eaae0;background:#f1f6fd}
+.upload-icon{color:var(--getin-blue)}
+.btn.btn-blue,.btn.btn-green,.btn.btn-purple{background:linear-gradient(135deg,var(--getin-navy),var(--getin-blue));border-color:transparent;color:#fff}
+.btn.btn-blue:hover,.btn.btn-green:hover,.btn.btn-purple:hover{background:linear-gradient(135deg,var(--getin-navy-dark),#0e5fca)}
+.upload-note{color:#6b7f9a}.upload-note span{color:#15945b}
+.search-section,.results-card,.report,.excel-import-card{border-color:var(--getin-border);box-shadow:0 5px 18px rgba(8,38,92,.05)}
+.search-section h3,.results-card h3,.report h3{color:var(--getin-navy)}
+.search-button,.refresh-button,.report-btn{background:var(--getin-blue)}
+.search-button:hover,.refresh-button:hover,.report-btn:hover{background:var(--getin-navy)}
+.results-header{border-color:var(--getin-border)}
+.candidate-card{border-color:var(--getin-border);box-shadow:0 4px 14px rgba(8,38,92,.04)}
+.rank-number{color:var(--getin-blue);background:#eef5ff}.candidate-info strong{color:var(--getin-navy)}
+.resume-view-btn{border-color:#b9cbe4;color:var(--getin-blue);background:#fff}.resume-view-btn:hover{background:#eef5ff;border-color:var(--getin-blue)}
+/* Compact upload cards: same visual scale as the summary cards */
+.upload-card{min-height:132px;padding:14px 16px}
+.upload-card-top{margin-bottom:7px}.upload-card-icon{width:38px;height:38px;font-size:18px}
+.upload-card h3{font-size:15px;margin-bottom:4px}.card-description{min-height:28px;margin-bottom:7px;font-size:10px}
+.upload-features{gap:4px;margin-bottom:7px}.upload-features span{padding:3px 5px;font-size:8px}
+.upload-card .drop-zone{min-height:0;padding:7px 9px;border-radius:10px;display:flex;align-items:center;gap:7px;text-align:left}
+.upload-card .drop-zone .upload-icon{font-size:17px}.upload-card .drop-zone strong{font-size:10px}.upload-card .drop-zone small,.upload-card .drop-zone .drop-hint{font-size:8px}
+.upload-card .drop-zone .drop-hint{display:none}.upload-card .file-name{font-size:8px}
+.upload-card .btn{margin-top:7px;padding:7px 11px;font-size:10px;border-radius:8px}
+.upload-note{font-size:8px;margin-top:5px}
+@media(max-width:1000px){.stats,.upload-grid{grid-template-columns:1fr}}
+
+
+/* =====================================================
+   FILE LIBRARIES - GETIN RECRUIT UI
+===================================================== */
+
+.clickable-stat {
+    cursor: pointer;
+    position: relative;
+    transition: transform .2s ease, box-shadow .2s ease,
+                border-color .2s ease, background .2s ease;
+}
+
+.clickable-stat::after {
+    content: "View";
+    position: absolute;
+    right: 16px;
+    bottom: 11px;
+    font-size: 9px;
+    font-weight: 800;
+    color: var(--getin-blue);
+    opacity: 0;
+    transform: translateY(3px);
+    transition: .2s ease;
+}
+
+.clickable-stat:hover {
+    transform: translateY(-3px);
+    border-color: #b9cbe4;
+    background: #fbfdff;
+    box-shadow: 0 12px 28px rgba(8,38,92,.10);
+}
+
+.clickable-stat:hover::after {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.file-management-section {
+    margin-bottom: 22px;
+    background: #fff;
+    border: 1px solid var(--getin-border);
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(8,38,92,.05);
+    overflow: hidden;
+    scroll-margin-top: 25px;
+}
+
+.file-management-header {
+    padding: 20px 22px;
+    border-bottom: 1px solid #e8edf4;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.file-management-heading {
+    min-width: 0;
+}
+
+.file-management-eyebrow {
+    color: var(--getin-blue);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+    margin-bottom: 5px;
+}
+
+.file-management-header h3 {
+    color: var(--getin-navy);
+    font-size: 18px;
+    font-weight: 800;
+}
+
+.file-management-header p {
+    margin-top: 5px;
+    color: var(--getin-muted);
+    font-size: 11px;
+}
+
+.file-management-count {
+    flex: 0 0 auto;
+    min-width: 82px;
+    padding: 9px 12px;
+    text-align: center;
+    border-radius: 10px;
+    background: #eef5ff;
+    color: var(--getin-blue);
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.file-management-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 22px;
+    border-bottom: 1px solid #edf1f6;
+    background: #fbfcfe;
+}
+
+.file-management-search {
+    position: relative;
+    flex: 1;
+}
+
+.file-management-search-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7890ad;
+    font-size: 15px;
+    pointer-events: none;
+}
+
+.file-management-search input {
+    width: 100%;
+    height: 40px;
+    padding: 0 13px 0 38px;
+    border: 1px solid #dbe2ea;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--getin-text);
+    font-size: 11px;
+    outline: none;
+}
+
+.file-management-search input:focus {
+    border-color: #8bb4e8;
+    box-shadow: 0 0 0 3px rgba(20,104,213,.08);
+}
+
+.file-management-refresh {
+    height: 40px;
+    padding: 0 14px;
+    border: 1px solid #b9cbe4;
+    border-radius: 9px;
+    background: #fff;
+    color: var(--getin-blue);
+    font-size: 10px;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.file-management-refresh:hover {
+    background: #eef5ff;
+    border-color: #8bb4e8;
+}
+
+.file-management-close {
+    border: none;
+    background: transparent;
+    color: #71839b;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+}
+
+.file-management-close:hover {
+    color: var(--getin-navy);
+}
+
+.file-management-list {
+    padding: 16px 22px 20px;
+    background: #f8fafc;
+}
+
+.uploaded-file-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    background: #fff;
+    border: 1px solid #e1e8f2;
+    border-radius: 12px;
+    transition: .2s ease;
+}
+
+.uploaded-file-row:last-child {
+    margin-bottom: 0;
+}
+
+.uploaded-file-row:hover {
+    border-color: #b9cbe4;
+    box-shadow: 0 7px 18px rgba(8,38,92,.06);
+    transform: translateY(-1px);
+}
+
+.uploaded-file-main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.uploaded-file-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: #eef5ff;
+    color: var(--getin-blue);
+    font-size: 19px;
+}
+
+.uploaded-file-icon.jd {
+    background: #eef7f2;
+    color: #16804d;
+}
+
+.uploaded-file-info {
+    min-width: 0;
+}
+
+.uploaded-file-name {
+    display: block;
+    color: var(--getin-navy);
+    font-size: 12px;
+    font-weight: 800;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uploaded-file-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 5px;
+    color: #71839b;
+    font-size: 9px;
+}
+
+.uploaded-file-actions {
+    flex: 0 0 auto;
+}
+
+.file-action-btn {
+    border: 1px solid #b9cbe4;
+    background: #fff;
+    color: var(--getin-blue);
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.file-action-btn:hover {
+    background: #eef5ff;
+    border-color: #7eaae0;
+}
+
+.file-empty-state,
+.file-loading-state,
+.file-error-state {
+    padding: 34px 18px;
+    text-align: center;
+    border: 1px dashed #d5deea;
+    border-radius: 11px;
+    background: #fff;
+}
+
+.file-empty-icon {
+    font-size: 25px;
+    margin-bottom: 8px;
+}
+
+.file-empty-state strong,
+.file-loading-state strong,
+.file-error-state strong {
+    display: block;
+    color: var(--getin-navy);
+    font-size: 12px;
+}
+
+.file-empty-state span,
+.file-loading-state span,
+.file-error-state span {
+    display: block;
+    margin-top: 5px;
+    color: #71839b;
+    font-size: 10px;
+}
+
+.file-error-state strong {
+    color: #b42318;
+}
+
+@media(max-width:700px) {
+    .file-management-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .file-management-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .file-management-refresh {
+        width: 100%;
+    }
+
+    .uploaded-file-row {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .uploaded-file-actions,
+    .file-action-btn {
+        width: 100%;
+    }
+}
+
 </style>
 </head>
 
@@ -1868,8 +2304,8 @@
             </div>
 
             <div class="logo-text">
-                <h2>AI ATS</h2>
-                <span>Resume Checker</span>
+                <h2>GetIn Recruit</h2>
+                <span>ATS Resume Platform</span>
             </div>
 
         </div>
@@ -1942,7 +2378,7 @@
             <div>
 
                 <h1>
-                    AI ATS Resume Checker ✨
+                    GetIn Recruit
                 </h1>
 
                 <p>
@@ -1953,15 +2389,16 @@
 
             <div class="recruiter">
 
-                <span>🔔</span>
+                <span class="notification-icon" title="Notifications">🔔</span>
+
+                <div class="header-wallet" title="Wallet balance">
+                    <span class="header-wallet-icon">💳</span>
+                    <span class="header-wallet-credits" id="walletCredits">--</span>
+                </div>
 
                 <div class="avatar">
                     R
                 </div>
-
-                <strong>
-                    Recruiter
-                </strong>
 
             </div>
 
@@ -1974,7 +2411,9 @@
 
         <section class="stats">
 
-            <div class="stat-card">
+            <div class="stat-card clickable-stat"
+                 onclick="showAllResumes()"
+                 title="View all uploaded resumes">
 
                 <div class="stat-icon blue">
                     👥
@@ -1995,7 +2434,9 @@
             </div>
 
 
-            <div class="stat-card">
+            <div class="stat-card clickable-stat"
+                 onclick="showAllJobDescriptions()"
+                 title="View all uploaded Job Descriptions">
 
                 <div class="stat-icon green">
                     💼
@@ -2004,11 +2445,11 @@
                 <div>
 
                     <div class="stat-title">
-                        Active Job Description
+                        Job Descriptions
                     </div>
 
-                    <div class="stat-value">
-                        1
+                    <div class="stat-value" id="totalJobDescriptions">
+                        --
                     </div>
 
                 </div>
@@ -2030,52 +2471,6 @@
 
                     <div class="stat-value" id="averageScore">
                         --
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="stat-card">
-
-                <div class="stat-icon orange">
-                    ⭐
-                </div>
-
-                <div>
-
-                    <div class="stat-title">
-                        Shortlisted
-                    </div>
-
-                    <div class="stat-value" id="shortlisted">
-                        --
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="stat-card wallet-card">
-
-                <div class="stat-icon wallet-icon">
-                    💳
-                </div>
-
-                <div>
-
-                    <div class="stat-title">
-                        Wallet Balance
-                    </div>
-
-                    <div class="stat-value" id="walletCredits">
-                        --
-                    </div>
-
-                    <div class="wallet-subtext">
-                        Credits available
                     </div>
 
                 </div>
@@ -2310,6 +2705,102 @@
         <!-- =========================
              SEARCH + STATUS
         ========================= -->
+
+
+        <!-- =====================================================
+             ALL UPLOADED RESUMES
+        ===================================================== -->
+        <section id="allResumesSection"
+                 class="file-management-section"
+                 style="display:none;">
+
+            <div class="file-management-header">
+                <div class="file-management-heading">
+                    <div class="file-management-eyebrow">RESUME LIBRARY</div>
+                    <h3>All Uploaded Resumes</h3>
+                    <p>View and search every resume stored in the ATS.</p>
+                </div>
+
+                <div class="file-management-count" id="allResumesCount">
+                    0 Resumes
+                </div>
+            </div>
+
+            <div class="file-management-toolbar">
+                <div class="file-management-search">
+                    <span class="file-management-search-icon">⌕</span>
+                    <input
+                        type="text"
+                        id="allResumeSearch"
+                        placeholder="Search by candidate name, email, skills or file name..."
+                        oninput="filterAllResumes()">
+                </div>
+
+                <button type="button"
+                        class="file-management-refresh"
+                        onclick="showAllResumes()">
+                    ↻ Refresh
+                </button>
+
+                <button type="button"
+                        class="file-management-close"
+                        onclick="hideFileManagementSections()">
+                    Hide
+                </button>
+            </div>
+
+            <div id="allResumesContainer"
+                 class="file-management-list">
+            </div>
+        </section>
+
+
+        <!-- =====================================================
+             ALL UPLOADED JOB DESCRIPTIONS
+        ===================================================== -->
+        <section id="allJobDescriptionsSection"
+                 class="file-management-section"
+                 style="display:none;">
+
+            <div class="file-management-header">
+                <div class="file-management-heading">
+                    <div class="file-management-eyebrow">JOB DESCRIPTION LIBRARY</div>
+                    <h3>All Uploaded Job Descriptions</h3>
+                    <p>View and search every Job Description uploaded to the ATS.</p>
+                </div>
+
+                <div class="file-management-count" id="allJobDescriptionsCount">
+                    0 JDs
+                </div>
+            </div>
+
+            <div class="file-management-toolbar">
+                <div class="file-management-search">
+                    <span class="file-management-search-icon">⌕</span>
+                    <input
+                        type="text"
+                        id="jdSearch"
+                        placeholder="Search by Job Description name, title or ID..."
+                        oninput="filterJobDescriptions()">
+                </div>
+
+                <button type="button"
+                        class="file-management-refresh"
+                        onclick="showAllJobDescriptions()">
+                    ↻ Refresh
+                </button>
+
+                <button type="button"
+                        class="file-management-close"
+                        onclick="hideFileManagementSections()">
+                    Hide
+                </button>
+            </div>
+
+            <div id="allJobDescriptionsContainer"
+                 class="file-management-list">
+            </div>
+        </section>
 
         <section class="middle-grid">
 
@@ -3115,7 +3606,6 @@ function filterCandidates() {
                     </div>
                 </div>`;
             document.getElementById("averageScore").innerText = "--";
-            document.getElementById("shortlisted").innerText = "0";
             return;
         }
 
@@ -3192,7 +3682,14 @@ function filterCandidates() {
 
                 </div>
 
-                <div class="candidate-details">
+                <button
+                    type="button"
+                    class="details-toggle"
+                    onclick="toggleCandidateDetails(${resumeId})">
+                    ▼ Show Candidate Details
+                </button>
+
+                <div class="candidate-details" id="details-${resumeId}">
 
                     <div class="detail-grid">
 
@@ -3252,8 +3749,6 @@ function filterCandidates() {
         document.getElementById("averageScore").innerText =
             average.toFixed(1) + "%";
 
-        document.getElementById("shortlisted").innerText =
-            data.filter(c => Number(c.atsScore || 0) >= 70).length;
     }
 
     function parseSkills(value) {
@@ -3660,12 +4155,6 @@ function filterCandidates() {
 
             walletCredits.innerText = credits.toLocaleString();
 
-            const walletCard =
-                document.querySelector(".wallet-card");
-
-            if (walletCard) {
-                walletCard.classList.toggle("wallet-low", credits < 50);
-            }
 
         } catch (error) {
             console.error("Wallet balance error:", error);
@@ -3683,11 +4172,581 @@ function filterCandidates() {
         function () {
 
             loadResumeCount();
+            loadJobDescriptionCount();
             loadWalletBalance();
             loadUserRole();
 
         }
     );
+
+
+
+    /* ==========================================================
+       UPLOADED FILE LIBRARIES
+       ========================================================== */
+
+    let allUploadedResumes = [];
+    let allUploadedJobDescriptions = [];
+
+
+    async function showAllResumes() {
+
+        const section =
+            document.getElementById("allResumesSection");
+
+        const container =
+            document.getElementById("allResumesContainer");
+
+        if (!section || !container) {
+            console.error("Resume library section not found.");
+            return;
+        }
+
+        const jdSection =
+            document.getElementById("allJobDescriptionsSection");
+
+        if (jdSection) {
+            jdSection.style.display = "none";
+        }
+
+        section.style.display = "block";
+
+        container.innerHTML = `
+            <div class="file-loading-state">
+                <div class="file-empty-icon">⏳</div>
+                <strong>Loading resumes...</strong>
+                <span>Please wait while your uploaded resumes are loaded.</span>
+            </div>
+        `;
+
+        try {
+
+            const response =
+                await fetch("/api/resumes");
+
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to load uploaded resumes."
+                );
+            }
+
+            const data =
+                await response.json();
+
+            allUploadedResumes =
+                Array.isArray(data) ? data : [];
+
+            const search =
+                document.getElementById("allResumeSearch");
+
+            if (search) {
+                search.value = "";
+            }
+
+            renderAllResumes(allUploadedResumes);
+
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Loading resumes failed:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="file-error-state">
+                    <div class="file-empty-icon">⚠️</div>
+                    <strong>Unable to load resumes</strong>
+                    <span>${escapeHtml(
+                        error.message ||
+                        "Please try again."
+                    )}</span>
+                </div>
+            `;
+        }
+    }
+
+
+    function renderAllResumes(resumes) {
+
+        const container =
+            document.getElementById("allResumesContainer");
+
+        const count =
+            document.getElementById("allResumesCount");
+
+        if (!container) return;
+
+        if (count) {
+            count.innerText =
+                `${resumes.length} ${
+                    resumes.length === 1
+                        ? "Resume"
+                        : "Resumes"
+                }`;
+        }
+
+        if (!resumes || resumes.length === 0) {
+
+            container.innerHTML = `
+                <div class="file-empty-state">
+                    <div class="file-empty-icon">📄</div>
+                    <strong>No resumes found</strong>
+                    <span>
+                        Upload resumes using the workspace above.
+                    </span>
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        resumes.forEach(resume => {
+
+            const card =
+                document.createElement("div");
+
+            card.className =
+                "uploaded-file-row";
+
+            const name =
+                resume.candidateName ||
+                "Unknown Candidate";
+
+            const email =
+                resume.email ||
+                "No email available";
+
+            const fileName =
+                resume.fileName ||
+                "Resume PDF";
+
+            const skills =
+                String(resume.skills || "")
+                    .split(",")
+                    .map(s => s.trim())
+                    .filter(Boolean)
+                    .slice(0, 3)
+                    .join(", ");
+
+            card.innerHTML = `
+                <div class="uploaded-file-main">
+
+                    <div class="uploaded-file-icon">
+                        📄
+                    </div>
+
+                    <div class="uploaded-file-info">
+
+                        <span class="uploaded-file-name"
+                              title="${escapeHtml(fileName)}">
+                            ${escapeHtml(name)}
+                        </span>
+
+                        <div class="uploaded-file-meta">
+
+                            <span>
+                                ✉ ${escapeHtml(email)}
+                            </span>
+
+                            <span>
+                                📎 ${escapeHtml(fileName)}
+                            </span>
+
+                            ${
+                                skills
+                                    ? `<span>
+                                        🛠 ${escapeHtml(skills)}
+                                      </span>`
+                                    : ""
+                            }
+
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="uploaded-file-actions">
+
+                    <button type="button"
+                            class="file-action-btn"
+                            onclick="viewResume(${Number(resume.id)})">
+                        👁 View Resume
+                    </button>
+
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+
+
+    function filterAllResumes() {
+
+        const input =
+            document.getElementById("allResumeSearch");
+
+        const query =
+            (input?.value || "")
+                .trim()
+                .toLowerCase();
+
+        if (!query) {
+            renderAllResumes(allUploadedResumes);
+            return;
+        }
+
+        const filtered =
+            allUploadedResumes.filter(resume => {
+
+                const name =
+                    String(resume.candidateName || "")
+                        .toLowerCase();
+
+                const email =
+                    String(resume.email || "")
+                        .toLowerCase();
+
+                const skills =
+                    String(resume.skills || "")
+                        .toLowerCase();
+
+                const fileName =
+                    String(resume.fileName || "")
+                        .toLowerCase();
+
+                return (
+                    name.includes(query) ||
+                    email.includes(query) ||
+                    skills.includes(query) ||
+                    fileName.includes(query)
+                );
+            });
+
+        renderAllResumes(filtered);
+    }
+
+
+    async function showAllJobDescriptions() {
+
+        const section =
+            document.getElementById(
+                "allJobDescriptionsSection"
+            );
+
+        const container =
+            document.getElementById(
+                "allJobDescriptionsContainer"
+            );
+
+        if (!section || !container) {
+            console.error(
+                "Job Description library section not found."
+            );
+            return;
+        }
+
+        const resumeSection =
+            document.getElementById(
+                "allResumesSection"
+            );
+
+        if (resumeSection) {
+            resumeSection.style.display = "none";
+        }
+
+        section.style.display = "block";
+
+        container.innerHTML = `
+            <div class="file-loading-state">
+                <div class="file-empty-icon">⏳</div>
+                <strong>Loading Job Descriptions...</strong>
+                <span>Please wait while the JD library is loaded.</span>
+            </div>
+        `;
+
+        try {
+
+            const response =
+                await fetch("/api/jobdescriptions");
+
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to load Job Descriptions."
+                );
+            }
+
+            const data =
+                await response.json();
+
+            allUploadedJobDescriptions =
+                Array.isArray(data) ? data : [];
+
+            const search =
+                document.getElementById("jdSearch");
+
+            if (search) {
+                search.value = "";
+            }
+
+            renderAllJobDescriptions(
+                allUploadedJobDescriptions
+            );
+
+            section.scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+
+        } catch (error) {
+
+            console.error(
+                "Loading Job Descriptions failed:",
+                error
+            );
+
+            container.innerHTML = `
+                <div class="file-error-state">
+                    <div class="file-empty-icon">⚠️</div>
+                    <strong>Unable to load Job Descriptions</strong>
+                    <span>${escapeHtml(
+                        error.message ||
+                        "Please try again."
+                    )}</span>
+                </div>
+            `;
+        }
+    }
+
+
+    function renderAllJobDescriptions(jobDescriptions) {
+
+        const container =
+            document.getElementById(
+                "allJobDescriptionsContainer"
+            );
+
+        const count =
+            document.getElementById(
+                "allJobDescriptionsCount"
+            );
+
+        if (!container) return;
+
+        if (count) {
+            count.innerText =
+                `${jobDescriptions.length} ${
+                    jobDescriptions.length === 1
+                        ? "JD"
+                        : "JDs"
+                }`;
+        }
+
+        if (!jobDescriptions ||
+            jobDescriptions.length === 0) {
+
+            container.innerHTML = `
+                <div class="file-empty-state">
+                    <div class="file-empty-icon">💼</div>
+                    <strong>No Job Descriptions found</strong>
+                    <span>
+                        Upload a Job Description using the workspace above.
+                    </span>
+                </div>
+            `;
+
+            return;
+        }
+
+        container.innerHTML = "";
+
+        jobDescriptions
+            .slice()
+            .reverse()
+            .forEach(jd => {
+
+                const card =
+                    document.createElement("div");
+
+                card.className =
+                    "uploaded-file-row";
+
+                const fileName =
+                    jd.fileName ||
+                    "Job Description";
+
+                const title =
+                    jd.title ||
+                    "Job Description";
+
+                card.innerHTML = `
+                    <div class="uploaded-file-main">
+
+                        <div class="uploaded-file-icon jd">
+                            💼
+                        </div>
+
+                        <div class="uploaded-file-info">
+
+                            <span class="uploaded-file-name"
+                                  title="${escapeHtml(fileName)}">
+                                ${escapeHtml(fileName)}
+                            </span>
+
+                            <div class="uploaded-file-meta">
+
+                                <span>
+                                    🆔 ID: ${escapeHtml(jd.id)}
+                                </span>
+
+                                <span>
+                                    💼 ${escapeHtml(title)}
+                                </span>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="uploaded-file-actions">
+
+                        <button type="button"
+                                class="file-action-btn"
+                                onclick="viewJobDescription(${Number(jd.id)})">
+                            👁 View JD
+                        </button>
+
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+    }
+
+
+    function filterJobDescriptions() {
+
+        const input =
+            document.getElementById("jdSearch");
+
+        const query =
+            (input?.value || "")
+                .trim()
+                .toLowerCase();
+
+        if (!query) {
+            renderAllJobDescriptions(
+                allUploadedJobDescriptions
+            );
+            return;
+        }
+
+        const filtered =
+            allUploadedJobDescriptions.filter(jd => {
+
+                const fileName =
+                    String(jd.fileName || "")
+                        .toLowerCase();
+
+                const title =
+                    String(jd.title || "")
+                        .toLowerCase();
+
+                const id =
+                    String(jd.id || "")
+                        .toLowerCase();
+
+                return (
+                    fileName.includes(query) ||
+                    title.includes(query) ||
+                    id.includes(query)
+                );
+            });
+
+        renderAllJobDescriptions(filtered);
+    }
+
+
+    function viewJobDescription(id) {
+
+        if (!id) return;
+
+        window.open(
+            "/api/jobdescriptions/" +
+            encodeURIComponent(id) +
+            "/file",
+            "_blank"
+        );
+    }
+
+
+    function hideFileManagementSections() {
+
+        const resumeSection =
+            document.getElementById(
+                "allResumesSection"
+            );
+
+        const jdSection =
+            document.getElementById(
+                "allJobDescriptionsSection"
+            );
+
+        if (resumeSection) {
+            resumeSection.style.display = "none";
+        }
+
+        if (jdSection) {
+            jdSection.style.display = "none";
+        }
+    }
+
+
+    async function loadJobDescriptionCount() {
+
+        const element =
+            document.getElementById(
+                "totalJobDescriptions"
+            );
+
+        if (!element) return;
+
+        try {
+
+            const response =
+                await fetch("/api/jobdescriptions");
+
+            if (!response.ok) {
+                throw new Error(
+                    "Unable to load JD count."
+                );
+            }
+
+            const data =
+                await response.json();
+
+            element.innerText =
+                Array.isArray(data)
+                    ? data.length
+                    : 0;
+
+        } catch (error) {
+
+            console.error(
+                "JD count error:",
+                error
+            );
+
+            element.innerText = "--";
+        }
+    }
 
 </script>
 
