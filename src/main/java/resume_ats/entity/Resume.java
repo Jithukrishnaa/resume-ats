@@ -25,17 +25,34 @@ public class Resume {
     @Column(name = "file_path", length = 1000)
     private String filePath;
 
-    // Complete Resume Text
+    // =========================================================
+    // RESUME HASH
+    // =========================================================
+    // SHA-256 hash of the actual uploaded file.
+    // Used to prevent the exact same resume from being uploaded
+    // more than once, even if the filename is changed.
+    // =========================================================
+
+    @Column(name = "resume_hash", unique = true, length = 64)
+    private String resumeHash;
+
+    // =========================================================
+    // COMPLETE RESUME TEXT
+    // =========================================================
+
     @Column(name = "raw_text", columnDefinition = "TEXT")
     private String rawText;
 
-    // Extracted Skills
+    // =========================================================
+    // EXTRACTED SKILLS
+    // =========================================================
+
     @Column(name = "skills", columnDefinition = "TEXT")
     private String skills;
 
-    // =======================
-    // Parsed Information
-    // =======================
+    // =========================================================
+    // PARSED INFORMATION
+    // =========================================================
 
     private Integer experienceYears = 0;
 
@@ -46,9 +63,9 @@ public class Resume {
 
     private String location;
 
-    // =======================
-    // New ATS Fields
-    // =======================
+    // =========================================================
+    // ATS FIELDS
+    // =========================================================
 
     private String linkedIn;
 
@@ -63,24 +80,24 @@ public class Resume {
     @Column(columnDefinition = "TEXT")
     private String projectSkills;
 
-    // =======================
-    // Constructor
-    // =======================
+    // =========================================================
+    // CONSTRUCTOR
+    // =========================================================
 
     public Resume() {
     }
 
-    // =======================
+    // =========================================================
     // ID
-    // =======================
+    // =========================================================
 
     public Long getId() {
         return id;
     }
 
-    // =======================
-    // Candidate Name
-    // =======================
+    // =========================================================
+    // CANDIDATE NAME
+    // =========================================================
 
     public String getCandidateName() {
         return candidateName;
@@ -90,9 +107,9 @@ public class Resume {
         this.candidateName = candidateName;
     }
 
-    // =======================
-    // Email
-    // =======================
+    // =========================================================
+    // EMAIL
+    // =========================================================
 
     public String getEmail() {
         return email;
@@ -102,9 +119,9 @@ public class Resume {
         this.email = email;
     }
 
-    // =======================
-    // Phone
-    // =======================
+    // =========================================================
+    // PHONE
+    // =========================================================
 
     public String getPhone() {
         return phone;
@@ -114,9 +131,9 @@ public class Resume {
         this.phone = phone;
     }
 
-    // =======================
-    // File Name
-    // =======================
+    // =========================================================
+    // FILE NAME
+    // =========================================================
 
     public String getFileName() {
         return fileName;
@@ -126,9 +143,9 @@ public class Resume {
         this.fileName = fileName;
     }
 
-    // =======================
-    // File Path
-    // =======================
+    // =========================================================
+    // FILE PATH
+    // =========================================================
 
     public String getFilePath() {
         return filePath;
@@ -138,9 +155,21 @@ public class Resume {
         this.filePath = filePath;
     }
 
-    // =======================
-    // Raw Resume Text
-    // =======================
+    // =========================================================
+    // RESUME HASH
+    // =========================================================
+
+    public String getResumeHash() {
+        return resumeHash;
+    }
+
+    public void setResumeHash(String resumeHash) {
+        this.resumeHash = resumeHash;
+    }
+
+    // =========================================================
+    // RAW RESUME TEXT
+    // =========================================================
 
     public String getRawText() {
         return rawText;
@@ -150,9 +179,9 @@ public class Resume {
         this.rawText = rawText;
     }
 
-    // =======================
-    // Skills
-    // =======================
+    // =========================================================
+    // SKILLS
+    // =========================================================
 
     public String getSkills() {
         return skills;
@@ -162,9 +191,9 @@ public class Resume {
         this.skills = skills;
     }
 
-    // =======================
-    // Experience
-    // =======================
+    // =========================================================
+    // EXPERIENCE
+    // =========================================================
 
     public Integer getExperienceYears() {
         return experienceYears;
@@ -174,9 +203,9 @@ public class Resume {
         this.experienceYears = experienceYears;
     }
 
-    // =======================
-    // Education
-    // =======================
+    // =========================================================
+    // EDUCATION
+    // =========================================================
 
     public String getEducation() {
         return education;
@@ -186,9 +215,9 @@ public class Resume {
         this.education = education;
     }
 
-    // =======================
-    // Certifications
-    // =======================
+    // =========================================================
+    // CERTIFICATIONS
+    // =========================================================
 
     public String getCertifications() {
         return certifications;
@@ -198,9 +227,9 @@ public class Resume {
         this.certifications = certifications;
     }
 
-    // =======================
-    // Location
-    // =======================
+    // =========================================================
+    // LOCATION
+    // =========================================================
 
     public String getLocation() {
         return location;
@@ -210,9 +239,9 @@ public class Resume {
         this.location = location;
     }
 
-    // =======================
-    // LinkedIn
-    // =======================
+    // =========================================================
+    // LINKEDIN
+    // =========================================================
 
     public String getLinkedIn() {
         return linkedIn;
@@ -222,9 +251,9 @@ public class Resume {
         this.linkedIn = linkedIn;
     }
 
-    // =======================
-    // GitHub
-    // =======================
+    // =========================================================
+    // GITHUB
+    // =========================================================
 
     public String getGithub() {
         return github;
@@ -234,9 +263,9 @@ public class Resume {
         this.github = github;
     }
 
-    // =======================
-    // Portfolio
-    // =======================
+    // =========================================================
+    // PORTFOLIO
+    // =========================================================
 
     public String getPortfolio() {
         return portfolio;
@@ -246,9 +275,9 @@ public class Resume {
         this.portfolio = portfolio;
     }
 
-    // =======================
-    // Employment Type
-    // =======================
+    // =========================================================
+    // EMPLOYMENT TYPE
+    // =========================================================
 
     public String getEmploymentType() {
         return employmentType;
@@ -258,9 +287,9 @@ public class Resume {
         this.employmentType = employmentType;
     }
 
-    // =======================
-    // Project Count
-    // =======================
+    // =========================================================
+    // PROJECT COUNT
+    // =========================================================
 
     public Integer getProjectCount() {
         return projectCount;
@@ -270,9 +299,9 @@ public class Resume {
         this.projectCount = projectCount;
     }
 
-    // =======================
-    // Project Skills
-    // =======================
+    // =========================================================
+    // PROJECT SKILLS
+    // =========================================================
 
     public String getProjectSkills() {
         return projectSkills;
@@ -281,5 +310,4 @@ public class Resume {
     public void setProjectSkills(String projectSkills) {
         this.projectSkills = projectSkills;
     }
-
 }

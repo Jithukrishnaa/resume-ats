@@ -1,7 +1,5 @@
 package resume_ats.controller;
 
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -15,49 +13,44 @@ import resume_ats.repository.ATSResultRepository;
 import resume_ats.repository.JobDescriptionRepository;
 import resume_ats.service.ATSMatchingService;
 import resume_ats.service.ResumeService;
+import resume_ats.service.SupabaseStorageService;
 import resume_ats.util.parser.JobDescriptionParser;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/jobdescriptions")
 public class JobDescriptionController {
 
-        private static final String UPLOAD_DIR = System.getProperty("user.dir")
-                        + File.separator
-                        + "Uploads"
-                        + File.separator
-                        + "jobdescriptions";
+        private static final long MAX_FILE_SIZE = 50L * 1024L * 1024L;
 
         private final JobDescriptionRepository jobDescriptionRepository;
-
         private final ATSResultRepository atsResultRepository;
-
         private final ResumeService resumeService;
-
         private final ATSMatchingService atsMatchingService;
-
-        // =========================================================
-        // CONSTRUCTOR
-        // =========================================================
+        private final SupabaseStorageService supabaseStorageService;
 
         public JobDescriptionController(
                         JobDescriptionRepository jobDescriptionRepository,
                         ATSResultRepository atsResultRepository,
                         ResumeService resumeService,
-                        ATSMatchingService atsMatchingService) {
+                        ATSMatchingService atsMatchingService,
+                        SupabaseStorageService supabaseStorageService) {
 
                 this.jobDescriptionRepository = jobDescriptionRepository;
-
                 this.atsResultRepository = atsResultRepository;
-
                 this.resumeService = resumeService;
-
                 this.atsMatchingService = atsMatchingService;
+                this.supabaseStorageService = supabaseStorageService;
         }
 
         // =========================================================
@@ -67,6 +60,9 @@ public class JobDescriptionController {
         @PostMapping("/upload")
         public ResponseEntity<?> uploadJobDescription(
                         @RequestParam("file") MultipartFile file) {
+
+                String supabaseObjectPath = null;
+                Path temporaryFile = null;
 
                 try {
 
@@ -81,6 +77,13 @@ public class JobDescriptionController {
                                                 .body("Please select a Job Description PDF.");
                         }
 
+                        if (file.getSize() > MAX_FILE_SIZE) {
+
+                                return ResponseEntity
+                                                .badRequest()
+                                                .body("JD file is too large. Maximum allowed size is 50 MB.");
+                        }
+
                         String originalFileName = file.getOriginalFilename();
 
                         if (originalFileName == null
@@ -91,55 +94,35 @@ public class JobDescriptionController {
                                                 .body("Invalid Job Description file.");
                         }
 
-                        if (!originalFileName
-                                        .toLowerCase()
-                                        .endsWith(".pdf")) {
+                        String safeFileName = new File(originalFileName).getName();
+
+                        if (!safeFileName.toLowerCase().endsWith(".pdf")) {
 
                                 return ResponseEntity
                                                 .badRequest()
-                                                .body(
-                                                                "Only PDF Job Description files are allowed.");
+                                                .body("Only PDF Job Description files are allowed.");
                         }
 
                         // =====================================================
-                        // 2. CREATE UPLOAD DIRECTORY
+                        // 2. CREATE TEMPORARY FILE
                         // =====================================================
 
-                        File uploadDirectory = new File(UPLOAD_DIR);
+                        Path tempDirectory = Files.createTempDirectory("resume-ats-jd-");
 
-                        if (!uploadDirectory.exists()) {
+                        temporaryFile = tempDirectory.resolve(safeFileName);
 
-                                boolean created = uploadDirectory.mkdirs();
+                        Files.write(
+                                        temporaryFile,
+                                        file.getBytes());
 
-                                if (!created
-                                                && !uploadDirectory.exists()) {
+                        File destination = temporaryFile.toFile();
 
-                                        return ResponseEntity
-                                                        .internalServerError()
-                                                        .body(
-                                                                        "Unable to create JD upload directory.");
-                                }
-                        }
+                        System.out.println(
+                                        "Temporary JD file : "
+                                                        + destination.getAbsolutePath());
 
                         // =====================================================
-                        // 3. CREATE SAFE FILE NAME
-                        // =====================================================
-
-                        String safeFileName = new File(originalFileName)
-                                        .getName();
-
-                        File destination = new File(
-                                        uploadDirectory,
-                                        safeFileName);
-
-                        // =====================================================
-                        // 4. SAVE PDF
-                        // =====================================================
-
-                        file.transferTo(destination);
-
-                        // =====================================================
-                        // 5. EXTRACT JD TEXT
+                        // 3. EXTRACT JD TEXT
                         // =====================================================
 
                         String jdText = resumeService.extractText(destination);
@@ -147,66 +130,82 @@ public class JobDescriptionController {
                         if (jdText == null
                                         || jdText.trim().isEmpty()) {
 
-                                // Remove invalid uploaded file.
-                                if (destination.exists()) {
-                                        destination.delete();
-                                }
-
                                 return ResponseEntity
                                                 .badRequest()
-                                                .body(
-                                                                "Unable to extract text from this JD PDF.");
+                                                .body("Unable to extract text from this JD PDF.");
+                        }
+
+                        // Limit very large extracted text
+                        if (jdText.length() > 50000) {
+
+                                jdText = jdText.substring(0, 50000);
                         }
 
                         // =====================================================
-                        // 6. GENERATE NORMALIZED JD HASH
+                        // 4. GENERATE NORMALIZED JD HASH
                         // =====================================================
 
                         String normalizedText = normalizeJdText(jdText);
 
                         String jdHash = generateSHA256(normalizedText);
 
+                        System.out.println(
+                                        "JD SHA-256 : " + jdHash);
+
                         // =====================================================
-                        // 7. DUPLICATE JD CHECK
+                        // 5. DUPLICATE CHECK
                         // =====================================================
 
-                        boolean duplicate = jobDescriptionRepository
-                                        .existsByJdHash(jdHash);
+                        boolean duplicate = jobDescriptionRepository.existsByJdHash(jdHash);
 
                         if (duplicate) {
 
-                                // Don't keep another physical copy.
-                                if (destination.exists()) {
-                                        destination.delete();
-                                }
-
                                 System.out.println(
                                                 "Duplicate JD rejected : "
-                                                                + originalFileName);
+                                                                + safeFileName);
 
                                 return ResponseEntity
-                                                .status(409)
+                                                .status(HttpStatus.CONFLICT)
                                                 .body(
                                                                 "This Job Description already exists in the JD Library.");
                         }
 
                         // =====================================================
-                        // 8. PARSE JD
+                        // 6. PARSE JD
                         // =====================================================
 
                         JobDescription jobDescription = JobDescriptionParser.parse(jdText);
 
                         if (jobDescription == null) {
 
-                                if (destination.exists()) {
-                                        destination.delete();
-                                }
-
                                 return ResponseEntity
                                                 .badRequest()
-                                                .body(
-                                                                "Unable to parse Job Description.");
+                                                .body("Unable to parse Job Description.");
                         }
+
+                        // =====================================================
+                        // 7. CREATE SUPABASE OBJECT PATH
+                        // =====================================================
+
+                        supabaseObjectPath = "job-descriptions/"
+                                        + UUID.randomUUID()
+                                        + ".pdf";
+
+                        System.out.println(
+                                        "Supabase object : "
+                                                        + supabaseObjectPath);
+
+                        // =====================================================
+                        // 8. UPLOAD JD TO SUPABASE
+                        // =====================================================
+
+                        supabaseStorageService.uploadBytes(
+                                        file.getBytes(),
+                                        supabaseObjectPath,
+                                        "application/pdf");
+
+                        System.out.println(
+                                        "JD uploaded to Supabase successfully.");
 
                         // =====================================================
                         // 9. SET JD INFORMATION
@@ -215,32 +214,40 @@ public class JobDescriptionController {
                         jobDescription.setFileName(
                                         safeFileName);
 
+                        // IMPORTANT:
+                        // Store Supabase object path, NOT local path.
                         jobDescription.setFilePath(
-                                        destination.getAbsolutePath());
+                                        supabaseObjectPath);
 
-                        jobDescription.setJdText(jdText);
+                        jobDescription.setJdText(
+                                        jdText);
 
-                        jobDescription.setJdHash(jdHash);
+                        jobDescription.setJdHash(
+                                        jdHash);
 
                         // =====================================================
-                        // 10. MAKE NEW JD ACTIVE AND SAVE
-                        //
-                        // Previous JDs remain in the library, but only this
-                        // JD becomes the active/current JD.
+                        // 10. MAKE NEW JD ACTIVE
                         // =====================================================
 
                         jobDescriptionRepository.deactivateAll();
 
                         jobDescription.setActive(true);
 
-                        JobDescription saved = jobDescriptionRepository
-                                        .save(jobDescription);
+                        // =====================================================
+                        // 11. SAVE TO POSTGRESQL
+                        // =====================================================
+
+                        JobDescription saved = jobDescriptionRepository.save(
+                                        jobDescription);
+
+                        System.out.println(
+                                        "JD saved to PostgreSQL.");
+
+                        System.out.println(
+                                        "JD ID : " + saved.getId());
 
                         // =====================================================
-                        // 11. RUN ATS
-                        //
-                        // Because this is the newest JD, the ATS service
-                        // can use it as the active/latest JD.
+                        // 12. RUN ATS
                         // =====================================================
 
                         try {
@@ -252,14 +259,14 @@ public class JobDescriptionController {
                                 atsException.printStackTrace();
 
                                 return ResponseEntity
-                                                .status(500)
+                                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                                 .body(
                                                                 "JD uploaded successfully, but ATS execution failed: "
                                                                                 + atsException.getMessage());
                         }
 
                         // =====================================================
-                        // 12. SUCCESS
+                        // 13. SUCCESS
                         // =====================================================
 
                         System.out.println(
@@ -285,6 +292,10 @@ public class JobDescriptionController {
                                                         + saved.getJdHash());
 
                         System.out.println(
+                                        "Supabase    : "
+                                                        + saved.getFilePath());
+
+                        System.out.println(
                                         "ATS         : EXECUTED");
 
                         System.out.println(
@@ -298,11 +309,62 @@ public class JobDescriptionController {
 
                         e.printStackTrace();
 
+                        // =====================================================
+                        // CLEANUP SUPABASE FILE IF DATABASE SAVE FAILED
+                        // =====================================================
+
+                        if (supabaseObjectPath != null) {
+
+                                try {
+
+                                        if (supabaseStorageService.fileExists(
+                                                        supabaseObjectPath)) {
+
+                                                supabaseStorageService.deleteFile(
+                                                                supabaseObjectPath);
+
+                                                System.out.println(
+                                                                "Supabase JD deleted after failure : "
+                                                                                + supabaseObjectPath);
+                                        }
+
+                                } catch (Exception cleanupException) {
+
+                                        cleanupException.printStackTrace();
+                                }
+                        }
+
                         return ResponseEntity
-                                        .status(500)
+                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
                                         .body(
                                                         "Job Description upload failed: "
                                                                         + e.getMessage());
+
+                } finally {
+
+                        // =====================================================
+                        // DELETE TEMPORARY FILE
+                        // =====================================================
+
+                        if (temporaryFile != null) {
+
+                                try {
+
+                                        Files.deleteIfExists(
+                                                        temporaryFile);
+
+                                        Path parent = temporaryFile.getParent();
+
+                                        if (parent != null) {
+
+                                                Files.deleteIfExists(parent);
+                                        }
+
+                                } catch (Exception cleanupException) {
+
+                                        cleanupException.printStackTrace();
+                                }
+                        }
                 }
         }
 
@@ -321,24 +383,28 @@ public class JobDescriptionController {
                                         .orElse(null);
 
                         if (jobDescription == null) {
+
                                 return ResponseEntity
                                                 .status(HttpStatus.NOT_FOUND)
                                                 .body(Map.of(
                                                                 "success", false,
-                                                                "message", "Job Description not found."));
+                                                                "message",
+                                                                "Job Description not found."));
                         }
 
-                        // Make every JD inactive first.
                         jobDescriptionRepository.deactivateAll();
 
-                        // Make the selected existing JD active.
                         jobDescription.setActive(true);
-                        jobDescriptionRepository.save(jobDescription);
 
-                        // Re-run ATS using this selected JD.
+                        jobDescriptionRepository.save(
+                                        jobDescription);
+
                         try {
+
                                 atsMatchingService.runATS();
+
                         } catch (Exception atsException) {
+
                                 atsException.printStackTrace();
 
                                 return ResponseEntity
@@ -347,8 +413,8 @@ public class JobDescriptionController {
                                                                 "success", false,
                                                                 "message",
                                                                 "JD activated, but ATS execution failed: "
-                                                                                + String.valueOf(atsException
-                                                                                                .getMessage())));
+                                                                                + String.valueOf(
+                                                                                                atsException.getMessage())));
                         }
 
                         return ResponseEntity.ok(
@@ -356,8 +422,10 @@ public class JobDescriptionController {
                                                         "success", true,
                                                         "message",
                                                         "Job Description activated and ATS results updated.",
-                                                        "activeJdId", jobDescription.getId(),
-                                                        "title", jobDescription.getTitle() == null
+                                                        "activeJdId",
+                                                        jobDescription.getId(),
+                                                        "title",
+                                                        jobDescription.getTitle() == null
                                                                         ? "Job Description"
                                                                         : jobDescription.getTitle()));
 
@@ -371,7 +439,8 @@ public class JobDescriptionController {
                                                         "success", false,
                                                         "message",
                                                         "Unable to activate Job Description.",
-                                                        "error", String.valueOf(e.getMessage())));
+                                                        "error",
+                                                        String.valueOf(e.getMessage())));
                 }
         }
 
@@ -401,17 +470,22 @@ public class JobDescriptionController {
                                         .orElse(null);
 
                         if (jobDescription == null) {
+
                                 return ResponseEntity
                                                 .status(HttpStatus.NOT_FOUND)
-                                                .body("Job Description not found.");
+                                                .body(
+                                                                "Job Description not found.");
                         }
 
-                        boolean wasActive = Boolean.TRUE.equals(jobDescription.getActive());
+                        boolean wasActive = Boolean.TRUE.equals(
+                                        jobDescription.getActive());
 
-                        String fileName = jobDescription.getFileName();
                         String filePath = jobDescription.getFilePath();
 
-                        // Remove ATS results belonging to this JD.
+                        // =====================================================
+                        // DELETE ATS RESULTS
+                        // =====================================================
+
                         List<ATSResult> jdResults = atsResultRepository.findAll()
                                         .stream()
                                         .filter(result -> result.getJdId() != null
@@ -419,21 +493,64 @@ public class JobDescriptionController {
                                         .toList();
 
                         if (!jdResults.isEmpty()) {
-                                atsResultRepository.deleteAll(jdResults);
+
+                                atsResultRepository.deleteAll(
+                                                jdResults);
                         }
 
-                        // Remove the physical PDF.
-                        if (filePath != null && !filePath.isBlank()) {
-                                File jdFile = new File(filePath);
-                                if (jdFile.exists() && jdFile.isFile()) {
-                                        jdFile.delete();
+                        // =====================================================
+                        // DELETE JD FROM SUPABASE
+                        // =====================================================
+
+                        if (filePath != null
+                                        && !filePath.isBlank()) {
+
+                                try {
+
+                                        // New Supabase path
+                                        if (filePath.startsWith(
+                                                        "job-descriptions/")) {
+
+                                                if (supabaseStorageService.fileExists(
+                                                                filePath)) {
+
+                                                        supabaseStorageService.deleteFile(
+                                                                        filePath);
+
+                                                        System.out.println(
+                                                                        "JD deleted from Supabase : "
+                                                                                        + filePath);
+                                                }
+
+                                        } else {
+
+                                                // Legacy local file support
+                                                File jdFile = new File(filePath);
+
+                                                if (jdFile.exists()
+                                                                && jdFile.isFile()) {
+
+                                                        jdFile.delete();
+                                                }
+                                        }
+
+                                } catch (Exception storageException) {
+
+                                        storageException.printStackTrace();
                                 }
                         }
 
-                        // Remove the JD record.
-                        jobDescriptionRepository.delete(jobDescription);
+                        // =====================================================
+                        // DELETE DATABASE RECORD
+                        // =====================================================
 
-                        // If the active JD was deleted, activate the newest remaining JD.
+                        jobDescriptionRepository.delete(
+                                        jobDescription);
+
+                        // =====================================================
+                        // ACTIVATE REPLACEMENT JD
+                        // =====================================================
+
                         if (wasActive) {
 
                                 JobDescription replacement = jobDescriptionRepository
@@ -442,26 +559,35 @@ public class JobDescriptionController {
                                 if (replacement != null) {
 
                                         jobDescriptionRepository.deactivateAll();
+
                                         replacement.setActive(true);
-                                        jobDescriptionRepository.save(replacement);
+
+                                        jobDescriptionRepository.save(
+                                                        replacement);
 
                                         try {
+
                                                 atsMatchingService.runATS();
+
                                         } catch (Exception atsException) {
+
                                                 atsException.printStackTrace();
 
                                                 return ResponseEntity
-                                                                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                                                .status(
+                                                                                HttpStatus.INTERNAL_SERVER_ERROR)
                                                                 .body(Map.of(
-                                                                                "success", false,
+                                                                                "success",
+                                                                                false,
                                                                                 "message",
                                                                                 "JD deleted and replacement activated, but ATS execution failed.",
-                                                                                "error", String.valueOf(atsException
-                                                                                                .getMessage())));
+                                                                                "error",
+                                                                                String.valueOf(
+                                                                                                atsException.getMessage())));
                                         }
 
                                 } else {
-                                        // No JDs remain. Clear all ATS results.
+
                                         atsResultRepository.deleteAll();
                                 }
                         }
@@ -469,20 +595,28 @@ public class JobDescriptionController {
                         return ResponseEntity.ok(
                                         Map.of(
                                                         "success", true,
-                                                        "message", "Job Description deleted successfully.",
-                                                        "deletedId", id,
-                                                        "wasActive", wasActive));
+                                                        "message",
+                                                        "Job Description deleted successfully.",
+                                                        "deletedId",
+                                                        id,
+                                                        "wasActive",
+                                                        wasActive));
 
                 } catch (Exception e) {
 
                         e.printStackTrace();
 
                         return ResponseEntity
-                                        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                        .status(
+                                                        HttpStatus.INTERNAL_SERVER_ERROR)
                                         .body(Map.of(
-                                                        "success", false,
-                                                        "message", "Unable to delete Job Description.",
-                                                        "error", String.valueOf(e.getMessage())));
+                                                        "success",
+                                                        false,
+                                                        "message",
+                                                        "Unable to delete Job Description.",
+                                                        "error",
+                                                        String.valueOf(
+                                                                        e.getMessage())));
                 }
         }
 
@@ -517,17 +651,43 @@ public class JobDescriptionController {
                                                 .build();
                         }
 
-                        File file = new File(filePath);
+                        byte[] fileBytes;
 
-                        if (!file.exists()
-                                        || !file.isFile()) {
+                        // =====================================================
+                        // NEW SUPABASE JD
+                        // =====================================================
 
-                                return ResponseEntity
-                                                .notFound()
-                                                .build();
+                        if (filePath.startsWith(
+                                        "job-descriptions/")) {
+
+                                fileBytes = supabaseStorageService.downloadFile(
+                                                filePath);
+
                         }
 
-                        Resource resource = new FileSystemResource(file);
+                        // =====================================================
+                        // LEGACY LOCAL JD
+                        // =====================================================
+
+                        else {
+
+                                File file = new File(filePath);
+
+                                if (!file.exists()
+                                                || !file.isFile()) {
+
+                                        return ResponseEntity
+                                                        .notFound()
+                                                        .build();
+                                }
+
+                                fileBytes = Files.readAllBytes(
+                                                file.toPath());
+                        }
+
+                        // =====================================================
+                        // RETURN PDF
+                        // =====================================================
 
                         return ResponseEntity.ok()
                                         .contentType(
@@ -535,20 +695,24 @@ public class JobDescriptionController {
                                         .header(
                                                         HttpHeaders.CONTENT_DISPOSITION,
                                                         "inline; filename=\""
-                                                                        + file.getName()
+                                                                        + jobDescription.getFileName()
                                                                         + "\"")
-                                        .body(resource);
+                                        .body(fileBytes);
 
                 } catch (Exception e) {
 
                         e.printStackTrace();
 
                         return ResponseEntity
-                                        .status(500)
+                                        .status(
+                                                        HttpStatus.INTERNAL_SERVER_ERROR)
                                         .body(
                                                         Map.of(
                                                                         "message",
-                                                                        "Unable to open Job Description."));
+                                                                        "Unable to open Job Description.",
+                                                                        "error",
+                                                                        String.valueOf(
+                                                                                        e.getMessage())));
                 }
         }
 
@@ -560,6 +724,7 @@ public class JobDescriptionController {
                         String text) {
 
                 if (text == null) {
+
                         return "";
                 }
 
@@ -593,6 +758,7 @@ public class JobDescriptionController {
                                                 0xff & b);
 
                                 if (hex.length() == 1) {
+
                                         hexString.append('0');
                                 }
 

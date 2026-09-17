@@ -9,12 +9,31 @@ import java.util.List;
 
 @Repository
 public interface ResumeRepository
-        extends JpaRepository<Resume, Long> {
+                extends JpaRepository<Resume, Long> {
 
-    boolean existsByEmailIgnoreCase(String email);
+        // =========================================================
+        // EXISTING EMAIL DUPLICATE CHECK
+        // =========================================================
 
-    List<Resume> findByCandidateNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFileNameContainingIgnoreCase(
-            String candidateName,
-            String email,
-            String fileName);
+        boolean existsByEmailIgnoreCase(String email);
+
+        // =========================================================
+        // SHA-256 RESUME DUPLICATE CHECK
+        // =========================================================
+        //
+        // Prevents the exact same resume file from being uploaded
+        // multiple times, even if the filename is changed.
+        //
+        // =========================================================
+
+        boolean existsByResumeHash(String resumeHash);
+
+        // =========================================================
+        // EXISTING SEARCH
+        // =========================================================
+
+        List<Resume> findByCandidateNameContainingIgnoreCaseOrEmailContainingIgnoreCaseOrFileNameContainingIgnoreCase(
+                        String candidateName,
+                        String email,
+                        String fileName);
 }
